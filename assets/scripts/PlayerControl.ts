@@ -19,14 +19,14 @@ export class PlayerControl extends Component {
   public player: Node = null;
 
   private animationComponent: Animation = null;
-  private groundScript = null;
   public jumpDuration = 0.5;
   public jumpHeight = 200;
+  public speed: number;
 
   start() {}
   protected onLoad(): void {
+    this.speed = 0;
     this.animationComponent = this.getComponent(Animation);
-    this.groundScript = find("Canvas/Backround").getComponent("Ground");
     // this.buttonScript = find("Canvas/btnL").getComponent("btnR");
 
     input.on(Input.EventType.KEY_DOWN, this.onKeyDown, this);
@@ -40,13 +40,13 @@ export class PlayerControl extends Component {
       case KeyCode.KEY_A:
         this.animationComponent.play("run");
         this.player.setScale(-Math.abs(scale.x), scale.y, scale.z);
-        this.groundScript.speed = 400;
+        this.speed = -400;
 
         break;
       case KeyCode.KEY_D:
         this.animationComponent.play("run");
         this.player.setScale(Math.abs(scale.x), scale.y, scale.z);
-        this.groundScript.speed = -400;
+        this.speed = 400;
         break;
       case KeyCode.SPACE:
         this.animationComponent.stop();
@@ -75,10 +75,17 @@ export class PlayerControl extends Component {
       case KeyCode.KEY_A:
       case KeyCode.KEY_D:
         this.animationComponent.play("idle");
-        this.groundScript.speed = 0;
+        this.speed = 0;
+        // this.groundScript.speed = 0;
         break;
     }
   }
 
-  update(deltaTime: number) {}
+  update(deltaTime: number) {
+    this.player.setPosition(
+      this.player.position.x + this.speed * deltaTime,
+      this.player.position.y,
+      this.player.position.z
+    );
+  }
 }

@@ -1,4 +1,4 @@
-import { _decorator, Component, Node, Vec3 } from "cc";
+import { _decorator, Component, Node, UITransform, Vec3 } from "cc";
 const { ccclass, property } = _decorator;
 
 @ccclass("Ground")
@@ -20,7 +20,10 @@ export class Ground extends Component {
   private groundWidth: number = 640;
   private tempPos: Vec3 = new Vec3();
   private rightmostX: number = 0;
+
   public speed: number = 0; // pixels per second
+  public groundNodeWidth: number;
+  public groundNode2Width: number;
 
   protected onLoad(): void {
     this.speed = 0;
