@@ -22,10 +22,12 @@ export class PlayerControl extends Component {
   public jumpDuration = 0.5;
   public jumpHeight = 200;
   public speed: number;
+  public hitForce: number;
 
   start() {}
   protected onLoad(): void {
     this.speed = 0;
+    this.hitForce = 0;
     this.animationComponent = this.getComponent(Animation);
     // this.buttonScript = find("Canvas/btnL").getComponent("btnR");
 
@@ -82,10 +84,12 @@ export class PlayerControl extends Component {
   }
 
   update(deltaTime: number) {
-    this.player.setPosition(
-      this.player.position.x + this.speed * deltaTime,
-      this.player.position.y,
-      this.player.position.z
-    );
+    this.node.x += this.speed * deltaTime;
+    this.node.x += this.hitForce * Math.sign(this.player.getScale().x);
+    if (this.hitForce > 0) {
+      this.hitForce -= 1;
+    } else if (this.hitForce < 0) {
+      this.hitForce = 0;
+    }
   }
 }

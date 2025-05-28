@@ -1,15 +1,15 @@
-import { _decorator, Component, find, Node, Animation, CCInteger } from "cc";
+import { _decorator, CCInteger, Component, find, Node, Animation } from "cc";
 const { ccclass, property } = _decorator;
 
-@ccclass("btnR")
-export class btnR extends Component {
+@ccclass("btnATK")
+export class btnATK extends Component {
   @property({
     type: CCInteger,
   })
   public LR: number = 0;
-  private charScript = null;
   private animScript = null;
   private player = null;
+  private charScript = null;
 
   onLoad() {
     this.player = find("Canvas/Character");
@@ -24,17 +24,15 @@ export class btnR extends Component {
   }
 
   onBtnClick() {
-    const scale = this.player.getScale();
     this.node.setScale(0.6, 0.6, 1);
-    this.charScript.speed = 400 * this.LR;
-    this.animScript.play("run");
-    this.player.setScale(this.LR * Math.abs(scale.x), scale.y, scale.z);
+    this.animScript.play("attack");
+    this.charScript.hitForce = 5;
   }
 
   onBtnClickEnd() {
     this.node.setScale(0.5, 0.5, 1);
-    this.charScript.speed = 0;
-    this.animScript.play("idle");
+    // this.animScript.stop("attack");
+    // this.animScript.play("idle");
   }
 
   update(deltaTime: number) {}
