@@ -10,6 +10,9 @@ import {
   tween,
   Vec3,
   find,
+  EPhysics2DDrawFlags,
+  PhysicsSystem2D,
+  SkeletalAnimationState,
 } from "cc";
 const { ccclass, property } = _decorator;
 
@@ -29,6 +32,7 @@ export class PlayerControl extends Component {
     this.speed = 0;
     this.hitForce = 0;
     this.animationComponent = this.getComponent(Animation);
+
     // this.buttonScript = find("Canvas/btnL").getComponent("btnR");
 
     input.on(Input.EventType.KEY_DOWN, this.onKeyDown, this);

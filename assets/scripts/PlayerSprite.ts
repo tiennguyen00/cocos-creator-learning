@@ -1,4 +1,11 @@
-import { _decorator, Component, Node, Animation, AudioSource } from "cc";
+import {
+  _decorator,
+  Component,
+  Node,
+  Animation,
+  AudioSource,
+  AnimationState,
+} from "cc";
 const { ccclass, property } = _decorator;
 
 @ccclass("PlayerSprite")
@@ -15,8 +22,13 @@ export class PlayerSprite extends Component {
 
   start() {
     this.Anim = this.node.getComponent(Animation);
+    this.Anim.on(Animation.EventType.FINISHED, this.onAnimationEvent, this);
     this.Sound = this.soundSword.getComponent(AudioSource);
     this.SoundFire = this.soundFire.getComponent(AudioSource);
+  }
+
+  onAnimationEvent(type: Animation.EventType, state: AnimationState) {
+    console.log("onAnimationEvent", type, state);
   }
 
   finish() {

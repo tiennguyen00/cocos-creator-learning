@@ -12,5 +12,22 @@
       "name": "ui",
       "value": 4
     }
-  ]
+  ],
+  "physics": {
+    "collisionMatrix": {
+      "0": 7,
+      "1": 5,
+      "2": 3
+    },
+    "collisionGroups": [
+      {
+        "index": 1,
+        "name": "playerHitBox"
+      },
+      {
+        "index": 2,
+        "name": "objHurtBox"
+      }
+    ]
+  }
 }
