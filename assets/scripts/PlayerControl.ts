@@ -9,10 +9,6 @@ import {
   Animation,
   tween,
   Vec3,
-  find,
-  EPhysics2DDrawFlags,
-  PhysicsSystem2D,
-  SkeletalAnimationState,
 } from "cc";
 const { ccclass, property } = _decorator;
 
@@ -26,12 +22,14 @@ export class PlayerControl extends Component {
   public jumpHeight = 200;
   public speed: number;
   public hitForce: number;
+  private playerSprite = null;
 
   start() {}
   protected onLoad(): void {
     this.speed = 0;
     this.hitForce = 0;
     this.animationComponent = this.getComponent(Animation);
+    this.playerSprite = this.getComponent("PlayerSprite");
 
     // this.buttonScript = find("Canvas/btnL").getComponent("btnR");
 
@@ -44,13 +42,16 @@ export class PlayerControl extends Component {
     // this.animationComponent.play("run");
     switch (event.keyCode) {
       case KeyCode.KEY_A:
-        this.animationComponent.play("run");
+        if (this.playerSprite.state == "idle") {
+          this.animationComponent.play("run");
+        }
         this.player.setScale(-Math.abs(scale.x), scale.y, scale.z);
         this.speed = -400;
-
         break;
       case KeyCode.KEY_D:
-        this.animationComponent.play("run");
+        if (this.playerSprite.state == "idle") {
+          this.animationComponent.play("run");
+        }
         this.player.setScale(Math.abs(scale.x), scale.y, scale.z);
         this.speed = 400;
         break;
@@ -80,15 +81,18 @@ export class PlayerControl extends Component {
     switch (event.keyCode) {
       case KeyCode.KEY_A:
       case KeyCode.KEY_D:
-        this.animationComponent.play("idle");
+        if (this.playerSprite.state == "idle") {
+          this.animationComponent.play("idle");
+        }
         this.speed = 0;
-        // this.groundScript.speed = 0;
         break;
     }
   }
 
   update(deltaTime: number) {
-    this.node.x += this.speed * deltaTime;
+    if (this.playerSprite.state == "idle") {
+      this.node.x += this.speed * deltaTime;
+    }
     this.node.x += this.hitForce * Math.sign(this.player.getScale().x);
     if (this.hitForce > 0) {
       this.hitForce -= 1;

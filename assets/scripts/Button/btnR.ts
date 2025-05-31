@@ -10,11 +10,13 @@ export class btnR extends Component {
   private charScript = null;
   private animScript = null;
   private player = null;
+  private spriteScript = null;
 
   onLoad() {
     this.player = find("Canvas/Character");
     this.charScript = this.player.getComponent("PlayerControl");
     this.animScript = this.player.getComponent(Animation);
+    this.spriteScript = this.player.getComponent("PlayerSprite");
   }
 
   start() {
@@ -26,15 +28,19 @@ export class btnR extends Component {
   onBtnClick() {
     const scale = this.player.getScale();
     this.node.setScale(0.6, 0.6, 1);
+    if (this.spriteScript.state == "idle") {
+      this.animScript.play("run");
+    }
     this.charScript.speed = 400 * this.LR;
-    this.animScript.play("run");
     this.player.setScale(this.LR * Math.abs(scale.x), scale.y, scale.z);
   }
 
   onBtnClickEnd() {
     this.node.setScale(0.5, 0.5, 1);
+    if (this.spriteScript.state == "idle") {
+      this.animScript.play("idle");
+    }
     this.charScript.speed = 0;
-    this.animScript.play("idle");
   }
 
   update(deltaTime: number) {}

@@ -10,11 +10,13 @@ export class btnATK extends Component {
   private animScript = null;
   private player = null;
   private charScript = null;
+  private spriteScript = null;
 
   onLoad() {
     this.player = find("Canvas/Character");
     this.charScript = this.player.getComponent("PlayerControl");
     this.animScript = this.player.getComponent(Animation);
+    this.spriteScript = this.player.getComponent("PlayerSprite");
   }
 
   start() {
@@ -24,9 +26,12 @@ export class btnATK extends Component {
   }
 
   onBtnClick() {
+    if (this.spriteScript.state == "idle") {
+      this.animScript.play("attack");
+      this.charScript.hitForce = 5;
+    }
     this.node.setScale(0.6, 0.6, 1);
-    this.animScript.play("attack");
-    this.charScript.hitForce = 5;
+    this.spriteScript.state = "attack";
   }
 
   onBtnClickEnd() {

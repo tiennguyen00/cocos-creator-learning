@@ -5,6 +5,7 @@ import {
   Animation,
   AudioSource,
   AnimationState,
+  find,
 } from "cc";
 const { ccclass, property } = _decorator;
 
@@ -19,20 +20,27 @@ export class PlayerSprite extends Component {
   private Anim: Animation = null;
   private Sound: AudioSource = null;
   private SoundFire: AudioSource = null;
+  private player: Node = null;
+  private charScript = null;
+  private state = "idle";
 
   start() {
     this.Anim = this.node.getComponent(Animation);
-    this.Anim.on(Animation.EventType.FINISHED, this.onAnimationEvent, this);
     this.Sound = this.soundSword.getComponent(AudioSource);
     this.SoundFire = this.soundFire.getComponent(AudioSource);
-  }
+    this.player = find("Canvas/Character");
+    this.charScript = this.player.getComponent("PlayerControl");
 
-  onAnimationEvent(type: Animation.EventType, state: AnimationState) {
-    console.log("onAnimationEvent", type, state);
+    this.state = "idle";
   }
 
   finish() {
-    this.Anim.play("idle");
+    this.state = "idle";
+    if (this.charScript.speed == 0) {
+      this.Anim.play("idle");
+    } else {
+      this.Anim.play("run");
+    }
   }
 
   sound() {
