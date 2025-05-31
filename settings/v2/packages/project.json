@@ -15,9 +15,10 @@
   ],
   "physics": {
     "collisionMatrix": {
-      "0": 7,
-      "1": 5,
-      "2": 3
+      "0": 1,
+      "1": 8,
+      "2": 0,
+      "3": 2
     },
     "collisionGroups": [
       {
@@ -27,6 +28,10 @@
       {
         "index": 2,
         "name": "objHurtBox"
+      },
+      {
+        "index": 3,
+        "name": "floor"
       }
     ]
   }
