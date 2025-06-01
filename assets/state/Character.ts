@@ -38,24 +38,31 @@ export class Character extends Component {
   private comboTimer = 0;
   private maxCompoTime = 1;
 
-  private state: CharacterState = CharacterState.IDLE;
+  private _state: CharacterState = CharacterState.IDLE;
   private anim: Animation;
   private body: RigidBody2D;
   private collider: BoxCollider2D;
 
   private moveDir: number = 0;
 
+  public get state(): CharacterState {
+    return this._state;
+  }
+  public set state(newState: CharacterState) {
+    if (this._state !== newState) {
+      this._state = newState;
+    }
+  }
+
   onLoad() {
     this.anim = this.getComponent(Animation);
     this.body = this.getComponent(RigidBody2D);
-    this.collider = this.getComponent(BoxCollider2D);
-    this.collider.on(Contact2DType.BEGIN_CONTACT, this.onBeginContact, this);
     input.on(Input.EventType.KEY_DOWN, this.onKeyDown, this);
     input.on(Input.EventType.KEY_UP, this.onKeyUp, this);
   }
 
-  onBeginContact(selfCollider: Collider2D, otherCollider: Collider2D) {
-    this.onLanded();
+  start() {
+    this.anim.play("idle1");
   }
 
   updateState() {
@@ -122,7 +129,9 @@ export class Character extends Component {
     this.comboTimer = this.maxCompoTime;
 
     if (this.comboTimer > 0) {
-      this.comboStep = (this.comboStep + 1) % 5;
+      if (this.comboStep == 4) {
+        this.comboStep = 1;
+      } else this.comboStep = (this.comboStep + 1) % 5;
     } else {
       this.comboStep = 0;
     }
@@ -131,11 +140,12 @@ export class Character extends Component {
   }
 
   private playComboAnimation(step: number) {
-    const state = this.anim.getState(`atk${step == 0 ? 1 : step}`);
+    const state = this.anim.getState(`atk${step}`);
 
     if (state) {
-      state.stop(); // Ensure restart even if same
+      state.stop();
       state.play();
+      this.node.emit("compo-attack", step);
     }
   }
 
@@ -151,8 +161,6 @@ export class Character extends Component {
   public die() {
     this.changeState(CharacterState.DEAD);
   }
-
-  start() {}
 
   update(dt: number) {
     // Handle left/right movement

@@ -1,4 +1,5 @@
 import { _decorator, Component, find, Node, Animation, CCInteger } from "cc";
+import { CharacterState } from "../../state/Character";
 const { ccclass, property } = _decorator;
 
 @ccclass("btnR")
@@ -7,40 +8,29 @@ export class btnR extends Component {
     type: CCInteger,
   })
   public LR: number = 0;
-  private charScript = null;
-  private animScript = null;
-  private player = null;
-  private spriteScript = null;
+  private character = null;
 
   onLoad() {
-    this.player = find("Canvas/Character");
-    this.charScript = this.player.getComponent("PlayerControl");
-    this.animScript = this.player.getComponent(Animation);
-    this.spriteScript = this.player.getComponent("PlayerSprite");
+    this.character = find("Canvas/GirlCharacter").getComponent("Character");
   }
 
   start() {
-    this.node.on(Node.EventType.TOUCH_START, this.onBtnClick, this);
-    this.node.on(Node.EventType.TOUCH_END, this.onBtnClickEnd, this);
-    this.node.on(Node.EventType.TOUCH_CANCEL, this.onBtnClickEnd, this);
+    this.node.on(Node.EventType.TOUCH_START, this.onTouchStart, this);
+    this.node.on(Node.EventType.TOUCH_END, this.onTouchEnd, this);
+    this.node.on(Node.EventType.TOUCH_CANCEL, this.onTouchEnd, this);
   }
 
-  onBtnClick() {
-    const scale = this.player.getScale();
+  onTouchStart() {
+    this.character.moveDir = this.LR;
+    this.character.node.setScale(this.LR * 1, 1, 1);
+    this.character.changeState(CharacterState.RUN, "walk1");
     this.node.setScale(0.6, 0.6, 1);
-    if (this.spriteScript.state == "idle") {
-      this.animScript.play("run");
-    }
-    this.charScript.speed = 400 * this.LR;
-    this.player.setScale(this.LR * Math.abs(scale.x), scale.y, scale.z);
   }
 
-  onBtnClickEnd() {
+  onTouchEnd() {
+    this.character.moveDir = 0;
+    this.character.changeState(CharacterState.IDLE, "idle1");
     this.node.setScale(0.5, 0.5, 1);
-    if (this.spriteScript.state == "idle") {
-      this.animScript.play("idle");
-    }
-    this.charScript.speed = 0;
   }
 
   update(deltaTime: number) {}
