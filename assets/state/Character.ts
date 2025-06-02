@@ -9,8 +9,6 @@ import {
   KeyCode,
   Vec2,
   BoxCollider2D,
-  Contact2DType,
-  Collider2D,
 } from "cc";
 const { ccclass, property } = _decorator;
 
@@ -31,17 +29,23 @@ export class Character extends Component {
   @property
   jumpForce: number = 600;
 
+  @property
+  hitForce: number = 5;
+
+  @property
+  maxCompoTime: number = 1;
+
   private jumpCount = 0;
   private jumpMax = 2;
 
   private comboStep = 0;
   private comboTimer = 0;
-  private maxCompoTime = 1;
+
+  private hitTimer = 0;
 
   private _state: CharacterState = CharacterState.IDLE;
   private anim: Animation;
   private body: RigidBody2D;
-  private collider: BoxCollider2D;
 
   private moveDir: number = 0;
 
@@ -101,10 +105,11 @@ export class Character extends Component {
         this.node.setScale(1, 1, 1);
         break;
       case KeyCode.SPACE:
-        if (event.keyCode === KeyCode.SPACE && this.jumpCount < this.jumpMax) {
+      case KeyCode.KEY_W:
+        if (this.jumpCount < this.jumpMax) {
           this.body.linearVelocity = new Vec2(this.body.linearVelocity.x, 0);
           this.body.applyLinearImpulseToCenter(
-            new Vec2(0, this.jumpForce),
+            new Vec2(0, this.jumpForce / Math.min(1.5, this.jumpCount + 1)),
             true
           );
           this.jumpCount++;
@@ -126,12 +131,13 @@ export class Character extends Component {
   }
 
   public onCombo() {
+    this.hitTimer = 0.25;
     this.comboTimer = this.maxCompoTime;
 
     if (this.comboTimer > 0) {
-      if (this.comboStep == 4) {
+      if (this.comboStep == 3) {
         this.comboStep = 1;
-      } else this.comboStep = (this.comboStep + 1) % 5;
+      } else this.comboStep = (this.comboStep + 1) % 4;
     } else {
       this.comboStep = 0;
     }
@@ -164,20 +170,26 @@ export class Character extends Component {
 
   update(dt: number) {
     // Handle left/right movement
-    if (
-      this.state !== CharacterState.DEAD &&
-      this.state !== CharacterState.HURT
-    ) {
-      this.body.linearVelocity = new Vec2(
-        this.moveDir * this.moveSpeed,
-        this.body.linearVelocity.y
-      );
+    if (this.hitTimer > 0) {
+      this.hitTimer -= dt;
     }
+
     // Handle combo timer
     if (this.comboTimer > 0) {
       this.comboTimer -= dt;
     } else {
       this.comboStep = 0;
+    }
+
+    if (
+      this.state !== CharacterState.DEAD &&
+      this.state !== CharacterState.HURT
+    ) {
+      this.body.linearVelocity = new Vec2(
+        this.moveDir * this.moveSpeed +
+          this.hitTimer * this.hitForce * this.node.scale.x,
+        this.body.linearVelocity.y
+      );
     }
 
     this.updateState();
