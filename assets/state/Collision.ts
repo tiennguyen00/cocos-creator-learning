@@ -26,6 +26,7 @@ export class Collision extends Component {
 
   private charScript = null;
   private collider: BoxCollider2D;
+  private testCol = null;
   private isHit = false;
 
   protected onLoad(): void {
@@ -39,6 +40,7 @@ export class Collision extends Component {
 
   onBeginContact(selfCollider: Collider2D, otherCollider: Collider2D) {
     if (otherCollider.node.name === "bear") {
+      console.log("onBeginContact: ", otherCollider.node.name);
       this.isHit = true;
     }
     this.charScript.onLanded();
@@ -59,5 +61,8 @@ export class Collision extends Component {
 
   start() {}
 
-  update(deltaTime: number) {}
+  update(deltaTime: number) {
+    // this.collider.node.setPosition(this.character.position);
+    // console.log(this.collider.node.position);
+  }
 }

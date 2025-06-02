@@ -350,7 +350,7 @@
     "_priority": 0,
     "_fov": 45,
     "_fovAxis": 0,
-    "_orthoHeight": 689.2307692307693,
+    "_orthoHeight": 720.6434316353888,
     "_near": 0,
     "_far": 2000,
     "_color": {
@@ -1033,13 +1033,13 @@
     "_restitution": 0,
     "_offset": {
       "__type__": "cc.Vec2",
-      "x": 0,
-      "y": 0
+      "x": -0.3,
+      "y": -0.2
     },
     "_size": {
       "__type__": "cc.Size",
-      "width": 39.3,
-      "height": 27
+      "width": 46.5,
+      "height": 27.3
     },
     "_id": "bf2w1FBktNOrBN0zLG6l+j"
   },
@@ -1171,8 +1171,8 @@
     "_enabled": true,
     "__prefab": null,
     "moveSpeed": 10,
-    "jumpForce": 200,
-    "hitForce": 5,
+    "jumpForce": 185,
+    "hitForce": 15,
     "maxCompoTime": 0.71,
     "_id": "118wH60CtOJYhCTP2Y09aL"
   },
@@ -1258,7 +1258,7 @@
     },
     "_enabled": true,
     "__prefab": null,
-    "tag": 0,
+    "tag": 1,
     "_group": 1,
     "_density": 1,
     "_sensor": false,
@@ -1266,13 +1266,13 @@
     "_restitution": 0,
     "_offset": {
       "__type__": "cc.Vec2",
-      "x": 9,
-      "y": 2.1
+      "x": 7.9,
+      "y": 4.2
     },
     "_size": {
       "__type__": "cc.Size",
-      "width": 78.5,
-      "height": 122.3
+      "width": 78.9,
+      "height": 111.4
     },
     "_id": "b0pTgUgZlDVrEZAWLaF6P9"
   },
@@ -3791,12 +3791,12 @@
     "_offset": {
       "__type__": "cc.Vec2",
       "x": -640,
-      "y": -44.68342857142857
+      "y": -41.5
     },
     "_size": {
       "__type__": "cc.Size",
       "width": 1280,
-      "height": 89.36685714285714
+      "height": 93.3
     },
     "_id": "2csBzx8YtFyrgu3b7jsnE8"
   },

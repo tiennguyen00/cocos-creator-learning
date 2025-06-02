@@ -41,7 +41,7 @@ export class ObjectHurt extends Component {
     HITEFF.parent = this.node.parent;
     HITEFF.setPosition(this.node.position.x, this.node.position.y, 0);
     this.audioSource.play();
-    this.cameraShake.shake(1, 2);
+    this.cameraShake.shake(0.71, 2);
   }
 
   update(deltaTime: number) {}

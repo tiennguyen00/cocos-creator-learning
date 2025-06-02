@@ -8,7 +8,6 @@ import {
   EventKeyboard,
   KeyCode,
   Vec2,
-  BoxCollider2D,
 } from "cc";
 const { ccclass, property } = _decorator;
 
@@ -131,6 +130,11 @@ export class Character extends Component {
   }
 
   public onCombo() {
+    // prevent combo when the character is moving
+    this.moveDir = 0;
+    // prevent spamming combo
+    if (this.comboTimer >= 0.2) return;
+
     this.hitTimer = 0.25;
     this.comboTimer = this.maxCompoTime;
 
@@ -172,6 +176,8 @@ export class Character extends Component {
     // Handle left/right movement
     if (this.hitTimer > 0) {
       this.hitTimer -= dt;
+    } else {
+      this.hitTimer = 0;
     }
 
     // Handle combo timer
