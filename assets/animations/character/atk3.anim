@@ -16,13 +16,16 @@
     "_tracks": [
       {
         "__id__": 1
+      },
+      {
+        "__id__": 7
       }
     ],
     "_exoticAnimation": null,
     "_events": [],
     "_embeddedPlayers": [],
     "_additiveSettings": {
-      "__id__": 7
+      "__id__": 12
     },
     "_auxiliaryCurveEntries": []
   },
@@ -115,6 +118,51 @@
         "__uuid__": "71e8c746-4d59-4ef6-a353-47e4581f7efc@f9941",
         "__expectedType__": "cc.SpriteFrame"
       }
+    ]
+  },
+  {
+    "__type__": "cc.animation.ObjectTrack",
+    "_binding": {
+      "__type__": "cc.animation.TrackBinding",
+      "path": {
+        "__id__": 8
+      },
+      "proxy": null
+    },
+    "_channel": {
+      "__id__": 10
+    }
+  },
+  {
+    "__type__": "cc.animation.TrackPath",
+    "_paths": [
+      {
+        "__id__": 9
+      },
+      "active"
+    ]
+  },
+  {
+    "__type__": "cc.animation.HierarchyPath",
+    "path": "hitbox"
+  },
+  {
+    "__type__": "cc.animation.Channel",
+    "_curve": {
+      "__id__": 11
+    }
+  },
+  {
+    "__type__": "cc.ObjectCurve",
+    "_times": [
+      0,
+      0.6666666666666666,
+      0.7333333333333333
+    ],
+    "_values": [
+      false,
+      true,
+      false
     ]
   },
   {

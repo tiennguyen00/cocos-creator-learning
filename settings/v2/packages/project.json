@@ -15,10 +15,11 @@
   ],
   "physics": {
     "collisionMatrix": {
-      "0": 13,
-      "1": 12,
-      "2": 11,
-      "3": 7
+      "0": 0,
+      "1": 4,
+      "2": 2,
+      "3": 16,
+      "4": 8
     },
     "collisionGroups": [
       {
@@ -32,6 +33,10 @@
       {
         "index": 3,
         "name": "floor"
+      },
+      {
+        "index": 4,
+        "name": "player"
       }
     ]
   }

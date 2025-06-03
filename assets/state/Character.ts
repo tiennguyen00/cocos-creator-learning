@@ -8,6 +8,8 @@ import {
   EventKeyboard,
   KeyCode,
   Vec2,
+BoxCollider2D,
+Contact2DType 
 } from "cc";
 const { ccclass, property } = _decorator;
 
@@ -45,6 +47,7 @@ export class Character extends Component {
   private _state: CharacterState = CharacterState.IDLE;
   private anim: Animation;
   private body: RigidBody2D;
+  private collider: BoxCollider2D
 
   private moveDir: number = 0;
 
@@ -60,13 +63,21 @@ export class Character extends Component {
   onLoad() {
     this.anim = this.getComponent(Animation);
     this.body = this.getComponent(RigidBody2D);
+    this.collider = this.getComponent(BoxCollider2D)
     input.on(Input.EventType.KEY_DOWN, this.onKeyDown, this);
     input.on(Input.EventType.KEY_UP, this.onKeyUp, this);
   }
 
   start() {
     this.anim.play("idle1");
+    this.collider.on(Contact2DType.BEGIN_CONTACT, this.onBeginContact, this);
   }
+
+  onBeginContact(selfCollider: Collider2D, otherCollider: Collider2D) {
+  	console.log("GirlCharacter: There is collision with ", otherCollider.node.name)
+       this.onLanded()
+  }
+
 
   updateState() {
     if (
