@@ -81,10 +81,10 @@ export class Character extends Component {
   }
 
   onBeginContact(selfCollider: Collider2D, otherCollider: Collider2D) {
-    console.log(
-      "GirlCharacter: There is collision with ",
-      otherCollider.node.name
-    );
+    // console.log(
+    //   "GirlCharacter: There is collision with ",
+    //   otherCollider.node.name
+    // );
     this.onLanded();
   }
 
