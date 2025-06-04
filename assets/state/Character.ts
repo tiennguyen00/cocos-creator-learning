@@ -8,8 +8,10 @@ import {
   EventKeyboard,
   KeyCode,
   Vec2,
-BoxCollider2D,
-Contact2DType 
+  Collider2D,
+  BoxCollider2D,
+  Contact2DType,
+  find,
 } from "cc";
 const { ccclass, property } = _decorator;
 
@@ -36,6 +38,8 @@ export class Character extends Component {
   @property
   maxCompoTime: number = 1;
 
+  hitBox: BoxCollider2D = null;
+
   private jumpCount = 0;
   private jumpMax = 2;
 
@@ -47,7 +51,7 @@ export class Character extends Component {
   private _state: CharacterState = CharacterState.IDLE;
   private anim: Animation;
   private body: RigidBody2D;
-  private collider: BoxCollider2D
+  private collider: BoxCollider2D;
 
   private moveDir: number = 0;
 
@@ -63,21 +67,26 @@ export class Character extends Component {
   onLoad() {
     this.anim = this.getComponent(Animation);
     this.body = this.getComponent(RigidBody2D);
-    this.collider = this.getComponent(BoxCollider2D)
+    this.collider = this.getComponent(BoxCollider2D);
     input.on(Input.EventType.KEY_DOWN, this.onKeyDown, this);
     input.on(Input.EventType.KEY_UP, this.onKeyUp, this);
   }
 
   start() {
+    this.hitBox = find("Canvas/GirlCharacter/hitbox").getComponent(
+      BoxCollider2D
+    );
     this.anim.play("idle1");
     this.collider.on(Contact2DType.BEGIN_CONTACT, this.onBeginContact, this);
   }
 
   onBeginContact(selfCollider: Collider2D, otherCollider: Collider2D) {
-  	console.log("GirlCharacter: There is collision with ", otherCollider.node.name)
-       this.onLanded()
+    console.log(
+      "GirlCharacter: There is collision with ",
+      otherCollider.node.name
+    );
+    this.onLanded();
   }
-
 
   updateState() {
     if (
@@ -109,10 +118,12 @@ export class Character extends Component {
       case KeyCode.KEY_A:
         this.moveDir = -1;
         this.node.setScale(-1, 1, 1);
+        this.hitBox.offset.x = -Math.abs(this.hitBox.offset.x);
         break;
       case KeyCode.KEY_D:
         this.moveDir = 1;
         this.node.setScale(1, 1, 1);
+        this.hitBox.offset.x = Math.abs(this.hitBox.offset.x);
         break;
       case KeyCode.SPACE:
       case KeyCode.KEY_W:

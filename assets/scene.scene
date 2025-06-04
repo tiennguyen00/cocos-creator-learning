@@ -821,7 +821,7 @@
     "_restitution": 0,
     "_offset": {
       "__type__": "cc.Vec2",
-      "x": 82.4,
+      "x": 82.3,
       "y": -2.9
     },
     "_size": {
@@ -879,6 +879,7 @@
     "jumpForce": 185,
     "hitForce": 15,
     "maxCompoTime": 0.71,
+    "hitbox": null,
     "_id": "118wH60CtOJYhCTP2Y09aL"
   },
   {
@@ -937,10 +938,10 @@
     "__prefab": null,
     "enabledContactListener": true,
     "bullet": false,
-    "awakeOnLoad": false,
+    "awakeOnLoad": true,
     "_group": 16,
     "_type": 2,
-    "_allowSleep": true,
+    "_allowSleep": false,
     "_gravityScale": 5,
     "_linearDamping": 0,
     "_angularDamping": 0,

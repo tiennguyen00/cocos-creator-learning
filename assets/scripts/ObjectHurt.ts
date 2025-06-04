@@ -31,7 +31,7 @@ export class ObjectHurt extends Component {
   protected onLoad(): void {
     PhysicsSystem2D.instance.debugDrawFlags = EPhysics2DDrawFlags.Aabb
     this.collider = this.node.getComponent(BoxCollider2D)
-    console.log("objectHurt: ", this.collider)
+    this.audioSource = this.getComponent(AudioSource);
     this.camera = find("Canvas/PlayerFollower/Camera");
     this.cameraShake = this.camera.getComponent(CameraShake);
     this.animation = this.getComponent(Animation);
@@ -39,11 +39,12 @@ export class ObjectHurt extends Component {
   }
 
   start() {
-    this.audioSource = this.getComponent(AudioSource);
+    
   }
 
   onBeginContact(selfCollider: Collider2D, otherCollider: Collider2D) {
   	console.log("Objecthurt: There is collision with ", otherCollider.node.name)
+  	this.onHitEffect()
   }
 
 

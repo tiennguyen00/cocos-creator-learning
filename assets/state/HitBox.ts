@@ -12,8 +12,8 @@ export class HitBox extends Component {
 
     }
 
-    update(deltaTime: number) {
-        this.collider.apply()
+    lateUpdate(deltaTime: number) {
+        //this.collider.apply()
     }
 }
 
