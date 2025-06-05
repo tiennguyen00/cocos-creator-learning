@@ -14,15 +14,16 @@ import {
   EPhysics2DDrawFlags,
 } from "cc";
 import { CameraShake } from "../utils/CameraShake";
+import { BaseState } from "../state/Base";
 const { ccclass, property } = _decorator;
 
 @ccclass("ObjectHurt")
 export class ObjectHurt extends Component {
   private audioSource: AudioSource | null = null;
-  private animation: Animation | null = null;
   private collider = null;
   private cameraShake = null;
   private camera = null;
+  private enemy = null;
 
   @property(Prefab)
   public hitEff: Prefab = null;
@@ -33,18 +34,22 @@ export class ObjectHurt extends Component {
     this.audioSource = this.getComponent(AudioSource);
     this.camera = find("Canvas/PlayerFollower/Camera");
     this.cameraShake = this.camera.getComponent(CameraShake);
-    this.animation = this.getComponent(Animation);
     this.collider.on(Contact2DType.BEGIN_CONTACT, this.onBeginContact, this);
+    this.enemy = this.node.getComponent("Enemy");
   }
 
   start() {}
 
   onBeginContact(selfCollider: Collider2D, otherCollider: Collider2D) {
-    console.log(
-      "Objecthurt: There is collision with ",
-      otherCollider.node.name
-    );
-    this.onHitEffect();
+    // only fire this func if it was collided with hitbox player
+    if (otherCollider.node.name === "hitbox") {
+      console.log(
+        "Objecthurt: There is collision with ",
+        otherCollider.node.name
+      );
+      this.onHitEffect();
+      this.enemy.changeState(BaseState.HURT, "hit");
+    }
   }
 
   onHitEffect() {

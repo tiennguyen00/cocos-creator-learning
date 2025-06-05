@@ -12,20 +12,13 @@ import {
   BoxCollider2D,
   Contact2DType,
   find,
+  AudioSource,
 } from "cc";
+import { Base, BaseState } from "./Base";
 const { ccclass, property } = _decorator;
 
-export enum CharacterState {
-  IDLE = "IDLE",
-  RUN = "RUN",
-  ATTACK = "ATTACK",
-  JUMP = "JUMP",
-  DEAD = "DEAD",
-  HURT = "HURT",
-}
-
 @ccclass("Character")
-export class Character extends Component {
+export class Character extends Base {
   @property
   moveSpeed: number = 300;
 
@@ -34,6 +27,9 @@ export class Character extends Component {
 
   @property
   hitForce: number = 5;
+
+  @property
+  stunForce: number = 5;
 
   @property
   maxCompoTime: number = 1;
@@ -46,74 +42,84 @@ export class Character extends Component {
   private comboStep = 0;
   private comboTimer = 0;
 
+  private stunTimer = 0;
+
   private hitTimer = 0;
 
-  private _state: CharacterState = CharacterState.IDLE;
   private anim: Animation;
   private body: RigidBody2D;
   private collider: BoxCollider2D;
-
+  private audioSource: AudioSource;
   private moveDir: number = 0;
-
-  public get state(): CharacterState {
-    return this._state;
-  }
-  public set state(newState: CharacterState) {
-    if (this._state !== newState) {
-      this._state = newState;
-    }
-  }
 
   onLoad() {
     this.anim = this.getComponent(Animation);
     this.body = this.getComponent(RigidBody2D);
     this.collider = this.getComponent(BoxCollider2D);
+    this.audioSource = this.getComponent(AudioSource);
     input.on(Input.EventType.KEY_DOWN, this.onKeyDown, this);
     input.on(Input.EventType.KEY_UP, this.onKeyUp, this);
-  }
-
-  start() {
+    this.collider.on(Contact2DType.BEGIN_CONTACT, this.onBeginContact, this);
     this.hitBox = find("Canvas/GirlCharacter/hitbox").getComponent(
       BoxCollider2D
     );
-    this.anim.play("idle1");
-    this.collider.on(Contact2DType.BEGIN_CONTACT, this.onBeginContact, this);
+  }
+
+  start() {
+    this.init(100, 10, 50);
+    this.changeAnim("idle1");
   }
 
   onBeginContact(selfCollider: Collider2D, otherCollider: Collider2D) {
-    // console.log(
-    //   "GirlCharacter: There is collision with ",
-    //   otherCollider.node.name
-    // );
-    this.onLanded();
-  }
-
-  updateState() {
-    if (
-      this.state === CharacterState.DEAD ||
-      this.state === CharacterState.HURT
-    )
-      return;
-
-    if (this.jumpCount > 0) {
-      this.changeState(CharacterState.JUMP, "jump1");
-    } else if (this.moveDir !== 0) {
-      this.changeState(CharacterState.RUN, "walk1");
-    } else if (this.comboStep > 0) {
-      this.changeState(CharacterState.ATTACK);
-    } else {
-      this.changeState(CharacterState.IDLE, "idle1");
+    if (otherCollider.node.name === "hitboxEne") {
+      console.log("Character: hitboxEne");
+      this.audioSource.play();
+    } else if (otherCollider.node.name === "ground") {
+      this.onLanded();
     }
   }
 
-  changeState(newState: CharacterState, anim?: string) {
-    if (this.state === newState) return;
-    this.state = newState;
-    console.log("State:", newState);
+  preventChangingState() {
+    return (
+      this.state === BaseState.DEAD ||
+      (this.state === BaseState.HURT && this.stunTimer > 0)
+    );
+  }
+
+  updateState() {
+    if (this.preventChangingState()) return;
+
+    if (this.jumpCount > 0) {
+      this.changeState(BaseState.JUMP, "jump1");
+    } else if (this.moveDir !== 0) {
+      this.changeState(BaseState.RUN, "walk1");
+    } else if (this.comboStep > 0) {
+      this.changeState(BaseState.ATTACK);
+    } else {
+      this.changeState(BaseState.IDLE, "idle1");
+    }
+  }
+
+  changeAnim(anim: string) {
+    this.anim.stop();
     this.anim.play(anim);
   }
 
+  changeState(newState: BaseState, anim?: string) {
+    if (this.state === newState) return;
+    this.state = newState;
+    // console.log("State:", newState);
+
+    // handle stun
+    if (this.state === BaseState.HURT) {
+      this.stunTimer = this.stunForce;
+    }
+    this.changeAnim(anim);
+  }
+
   onKeyDown(event: EventKeyboard) {
+    if (this.preventChangingState()) return;
+
     switch (event.keyCode) {
       case KeyCode.KEY_A:
         this.moveDir = -1;
@@ -181,25 +187,19 @@ export class Character extends Component {
     }
   }
 
-  public takeDamage() {
-    if (this.state === CharacterState.DEAD) return;
-    this.changeState(CharacterState.HURT);
-    // Optional: after a delay, return to Idle
-    setTimeout(() => {
-      this.changeState(CharacterState.IDLE, "idle1");
-    }, 500);
-  }
-
-  public die() {
-    this.changeState(CharacterState.DEAD);
-  }
-
   update(dt: number) {
     // Handle left/right movement
     if (this.hitTimer > 0) {
       this.hitTimer -= dt;
     } else {
       this.hitTimer = 0;
+    }
+
+    // Handle stun timer
+    if (this.stunTimer > 0) {
+      this.stunTimer -= dt;
+    } else {
+      this.stunTimer = 0;
     }
 
     // Handle combo timer
@@ -209,10 +209,7 @@ export class Character extends Component {
       this.comboStep = 0;
     }
 
-    if (
-      this.state !== CharacterState.DEAD &&
-      this.state !== CharacterState.HURT
-    ) {
+    if (this.state !== BaseState.DEAD && this.state !== BaseState.HURT) {
       this.body.linearVelocity = new Vec2(
         this.moveDir * this.moveSpeed +
           this.hitTimer * this.hitForce * this.node.scale.x,

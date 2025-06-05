@@ -1,5 +1,4 @@
 import { _decorator, CCInteger, Component, find, Node, Animation } from "cc";
-import { CharacterState } from "../../state/Character";
 const { ccclass, property } = _decorator;
 
 @ccclass("btnATK")

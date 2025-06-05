@@ -1,115 +1,140 @@
 import {
   _decorator,
-  Component,
   Node,
-  Vec3,
-  Quat,
-  BoxCollider2D,
   RigidBody2D,
   find,
   Animation,
+  BoxCollider2D,
 } from "cc";
 const { ccclass, property } = _decorator;
-
-export enum EnemyState {
-  PATROL = "PATROL",
-  ATTACK = "ATTACK",
-  CHASE = "CHASE",
-  DEAD = "DEAD",
-  HIT = "HIT",
-}
+import { Base, BaseState } from "../Base";
 
 @ccclass("Enemy")
-export class Enemy extends Component {
+export class Enemy extends Base {
   @property
   moveSpeed: number = 1 / 5;
 
   @property
-  attackRange: number = 15;
+  attackRange: number = 50;
 
   @property
-  attackCooldown: number = 1;
+  detectRange: number = 200;
+
+  attackDamage: number = 1;
+  @property
+  attackCooldown: number = 2;
 
   @property
-  health: number = 100;
+  stunForce: number = 5;
 
-  private _state: EnemyState = EnemyState.PATROL;
+  private attackTimer = 0;
+
+  private stunTimer = 0;
+
   private anim: Animation;
   private body: RigidBody2D;
-  private player: Node = null;
+  public player: Node = null;
+  public playerScript = null;
+  private colliderHitbox: BoxCollider2D;
 
-  private originPos;
   private eslaped = 0;
   private rangePos = 200;
 
   onLoad() {
     this.anim = this.getComponent(Animation);
     this.player = find("Canvas/GirlCharacter");
+    this.playerScript = this.player.getComponent("Character");
+    this.colliderHitbox = this.getComponentInChildren(BoxCollider2D);
   }
 
   start() {
-    this.originPos = this.node.x;
     this.node.setRotationFromEuler(0, -180, 0);
   }
 
-  updateState() {
-    if (this._state === EnemyState.DEAD) return;
+  preventChangingState() {
+    return (
+      this.state === BaseState.DEAD ||
+      (this.state === BaseState.HURT && this.stunTimer > 0)
+    );
+  }
+
+  changeAnim(anim: string) {
+    this.anim.stop();
+    this.anim.play(anim);
+  }
+
+  updateState(dt: number) {
+    if (this.preventChangingState()) return;
 
     const distanceToPlayer = this.node.position
       .clone()
       .subtract(this.player.position)
       .length();
 
+    // console.log("distanceToPlayer: ", distanceToPlayer);
+
     if (this.health <= 0) {
-      this.changeState(EnemyState.DEAD);
+      this.changeState(BaseState.DEAD);
     } else if (distanceToPlayer <= this.attackRange) {
-      this.changeState(EnemyState.ATTACK);
+      if (this.attackTimer === 0) {
+        this.anim.play("atk");
+        this.changeState(BaseState.ATTACK, "atk");
+        this.playerScript?.changeState(BaseState.HURT, "hurt1");
+        this.attackTimer = this.attackCooldown;
+      }
     } else if (distanceToPlayer <= this.attackRange + 250) {
-      this.changeState(EnemyState.CHASE);
-      if (this.node.x > this.player.x) {
-        this.node.x -= this.moveSpeed * 0.01;
+      this.changeState(BaseState.RUN, "run");
+      if (this.node.x > this.player.x + this.attackRange) {
+        this.node.x -= this.moveSpeed * dt;
         this.node.setRotationFromEuler(0, 0, 0);
+        this.colliderHitbox.offset.x = -Math.abs(this.colliderHitbox.offset.x);
       } else {
-        this.node.x += this.moveSpeed * 0.01;
+        this.node.x += this.moveSpeed * dt;
         this.node.setRotationFromEuler(0, -180, 0);
+        this.colliderHitbox.offset.x = Math.abs(this.colliderHitbox.offset.x);
       }
     } else {
-      this.changeState(EnemyState.PATROL);
+      this.changeState(BaseState.IDLE, "walk");
     }
   }
 
-  changeState(newState: EnemyState) {
-    if (this._state === newState) return;
-    this._state = newState;
-    switch (newState) {
-      case EnemyState.PATROL:
-        this.anim.play("walk");
-        break;
-      case EnemyState.CHASE:
-        this.anim.play("run");
-        break;
-      case EnemyState.ATTACK:
-        this.anim.play("atk");
-        setTimeout(() => {
-          this.anim.play("walk");
-          this.changeState(EnemyState.CHASE);
-        }, 2000);
-        break;
-      case EnemyState.DEAD:
-        this.anim.play("dead");
-        break;
+  changeState(newState: BaseState, anim?: string) {
+    if (this.state === newState) return;
+
+    this.state = newState;
+
+    if (newState === BaseState.HURT) {
+      this.stunTimer = this.stunForce;
     }
+
+    this.changeAnim(anim);
+
+    // switch (newState) {
+    //   case BaseState.ATTACK:
+    //     this.unscheduleAllCallbacks();
+    //     this.scheduleOnce(() => {
+    //       this.anim.play("run");
+    //       this.changeState(BaseState.RUN);
+    //     }, this.attackCooldown);
+    //     break;
+    // }
   }
 
   update(dt: number) {
     this.eslaped += dt;
-    this.updateState();
-    // if (this.node.x >= this.originPos + this.rangePos - 10) {
-    //   this.node.setRotationFromEuler(0, 0, 0);
-    // } else if (this.node.x <= this.originPos - this.rangePos + 10) {
-    //   this.node.setRotationFromEuler(0, -180, 0);
-    // }
-    // this.node.x =
-    //   this.originPos + Math.sin(this.moveSpeed * this.eslaped) * this.rangePos;
+
+    if (this.stunTimer > 0) {
+      this.stunTimer -= dt;
+    } else {
+      this.stunTimer = 0;
+    }
+
+    if (this.attackTimer > 0) {
+      this.attackTimer -= dt;
+    } else {
+      this.attackTimer = 0;
+    }
+
+    this.updateState(dt);
   }
 }

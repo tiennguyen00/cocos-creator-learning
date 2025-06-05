@@ -17,9 +17,11 @@
     "collisionMatrix": {
       "0": 0,
       "1": 4,
-      "2": 2,
+      "2": 18,
       "3": 16,
-      "4": 8
+      "4": 44,
+      "5": 16,
+      "6": 0
     },
     "collisionGroups": [
       {
@@ -37,6 +39,10 @@
       {
         "index": 4,
         "name": "player"
+      },
+      {
+        "index": 5,
+        "name": "objHitBox"
       }
     ]
   }
