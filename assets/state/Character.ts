@@ -124,12 +124,11 @@ export class Character extends Base {
       case KeyCode.KEY_A:
         this.moveDir = -1;
         this.node.setScale(-1, 1, 1);
-        this.hitBox.offset.x = -Math.abs(this.hitBox.offset.x);
         break;
       case KeyCode.KEY_D:
         this.moveDir = 1;
         this.node.setScale(1, 1, 1);
-        this.hitBox.offset.x = Math.abs(this.hitBox.offset.x);
+
         break;
       case KeyCode.SPACE:
       case KeyCode.KEY_W:

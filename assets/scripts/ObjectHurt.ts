@@ -29,7 +29,7 @@ export class ObjectHurt extends Component {
   public hitEff: Prefab = null;
 
   protected onLoad(): void {
-    // PhysicsSystem2D.instance.debugDrawFlags = EPhysics2DDrawFlags.Aabb;
+    PhysicsSystem2D.instance.debugDrawFlags = EPhysics2DDrawFlags.Aabb;
     this.collider = this.node.getComponent(BoxCollider2D);
     this.audioSource = this.getComponent(AudioSource);
     this.camera = find("Canvas/PlayerFollower/Camera");

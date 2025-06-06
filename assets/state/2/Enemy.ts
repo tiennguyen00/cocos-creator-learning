@@ -1,11 +1,4 @@
-import {
-  _decorator,
-  Node,
-  RigidBody2D,
-  find,
-  Animation,
-  BoxCollider2D,
-} from "cc";
+import { _decorator, Node, find, Animation, BoxCollider2D } from "cc";
 const { ccclass, property } = _decorator;
 import { Base, BaseState } from "../Base";
 
@@ -18,7 +11,7 @@ export class Enemy extends Base {
   attackRange: number = 50;
 
   @property
-  detectRange: number = 200;
+  detectRange: number = 500;
 
   attackDamage: number = 1;
   @property
@@ -32,19 +25,18 @@ export class Enemy extends Base {
   private stunTimer = 0;
 
   private anim: Animation;
-  private body: RigidBody2D;
+  private hitBoxEne: Node = null;
   public player: Node = null;
   public playerScript = null;
-  private colliderHitbox: BoxCollider2D;
 
   private eslaped = 0;
   private rangePos = 200;
 
   onLoad() {
     this.anim = this.getComponent(Animation);
+    this.hitBoxEne = this.node.getChildByName("hitboxEne");
     this.player = find("Canvas/GirlCharacter");
     this.playerScript = this.player.getComponent("Character");
-    this.colliderHitbox = this.getComponentInChildren(BoxCollider2D);
   }
 
   start() {
@@ -65,33 +57,32 @@ export class Enemy extends Base {
 
   updateState(dt: number) {
     if (this.preventChangingState()) return;
+    const enePos = this.hitBoxEne.getWorldPosition().x;
+    const charPos = this.player.getWorldPosition().x;
+    const distanceToPlayer = Math.abs(enePos - charPos);
 
-    const distanceToPlayer = this.node.position
-      .clone()
-      .subtract(this.player.position)
-      .length();
-
-    // console.log("distanceToPlayer: ", distanceToPlayer);
-
-    if (this.health <= 0) {
-      this.changeState(BaseState.DEAD);
-    } else if (distanceToPlayer <= this.attackRange) {
+    if (distanceToPlayer <= this.attackRange) {
       if (this.attackTimer === 0) {
         this.anim.play("atk");
         this.changeState(BaseState.ATTACK, "atk");
         this.playerScript?.changeState(BaseState.HURT, "hurt1");
         this.attackTimer = this.attackCooldown;
       }
-    } else if (distanceToPlayer <= this.attackRange + 250) {
+    } else if (
+      distanceToPlayer <= this.detectRange &&
+      distanceToPlayer >= this.moveSpeed
+    ) {
       this.changeState(BaseState.RUN, "run");
-      if (this.node.x > this.player.x + this.attackRange) {
-        this.node.x -= this.moveSpeed * dt;
-        this.node.setRotationFromEuler(0, 0, 0);
-        this.colliderHitbox.offset.x = -Math.abs(this.colliderHitbox.offset.x);
+      if (enePos > charPos) {
+        this.node.x -= this.moveSpeed;
+        if (distanceToPlayer > 100) {
+          this.node.setRotationFromEuler(0, 0, 0); // face left
+        }
       } else {
-        this.node.x += this.moveSpeed * dt;
-        this.node.setRotationFromEuler(0, -180, 0);
-        this.colliderHitbox.offset.x = Math.abs(this.colliderHitbox.offset.x);
+        this.node.x += this.moveSpeed;
+        if (distanceToPlayer > 100) {
+          this.node.setRotationFromEuler(0, -180, 0); // face right
+        }
       }
     } else {
       this.changeState(BaseState.IDLE, "walk");
@@ -108,16 +99,6 @@ export class Enemy extends Base {
     }
 
     this.changeAnim(anim);
-
-    // switch (newState) {
-    //   case BaseState.ATTACK:
-    //     this.unscheduleAllCallbacks();
-    //     this.scheduleOnce(() => {
-    //       this.anim.play("run");
-    //       this.changeState(BaseState.RUN);
-    //     }, this.attackCooldown);
-    //     break;
-    // }
   }
 
   update(dt: number) {
