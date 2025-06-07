@@ -1,5 +1,5 @@
 import { _decorator, Component, find, Node, Animation, CCInteger } from "cc";
-import { CharState } from "../../state/Base";
+import { BaseState } from "../../state/Base";
 const { ccclass, property } = _decorator;
 
 @ccclass("btnR")
@@ -23,13 +23,13 @@ export class btnR extends Component {
   onTouchStart() {
     this.character.moveDir = this.LR;
     this.character.node.setScale(this.LR * 1, 1, 1);
-    this.character.changeState(CharState.RUN, "walk1");
+    this.character.changeState(BaseState.RUN, "walk1");
     this.node.setScale(0.6, 0.6, 1);
   }
 
   onTouchEnd() {
     this.character.moveDir = 0;
-    this.character.changeState(CharState.IDLE, "idle1");
+    this.character.changeState(BaseState.IDLE, "idle1");
     this.node.setScale(0.5, 0.5, 1);
   }
 

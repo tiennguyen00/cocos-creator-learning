@@ -1,12 +1,12 @@
 import { Component } from "cc";
 
 export enum BaseState {
-  IDLE = "IDLE",
-  ATTACK = "ATTACK",
-  JUMP = "JUMP",
-  DEAD = "DEAD",
-  HURT = "HURT",
-  RUN = "RUN",
+  IDLE = "idle",
+  ATTACK = "attack",
+  JUMP = "jump",
+  DEAD = "dead",
+  HURT = "hurt",
+  RUN = "run",
 }
 
 export abstract class Base extends Component {

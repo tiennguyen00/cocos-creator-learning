@@ -9,9 +9,9 @@
     "_native": "",
     "sample": 6,
     "speed": 3,
-    "wrapMode": 1,
+    "wrapMode": 0,
     "enableTrsBlending": false,
-    "_duration": 1.1666666666666667,
+    "_duration": 1.5,
     "_hash": 500763545,
     "_tracks": [
       {
@@ -66,7 +66,7 @@
     "_times": [
       0,
       0.5,
-      1
+      1.3333333333333333
     ],
     "_values": [
       {

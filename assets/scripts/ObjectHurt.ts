@@ -48,7 +48,8 @@ export class ObjectHurt extends Component {
         otherCollider.node.name
       );
       this.onHitEffect();
-      this.enemy.changeState(BaseState.HURT, "hit");
+      this.enemy.changeState(BaseState.HURT);
+      this.enemy.anim.play("hit");
     }
   }
 
@@ -58,6 +59,9 @@ export class ObjectHurt extends Component {
     HITEFF.setPosition(this.node.position.x, this.node.position.y, 0);
     this.audioSource.play();
     this.cameraShake.shake(0.71, 2);
+    setTimeout(() => {
+      HITEFF.destroy();
+    }, 500);
   }
 
   update(deltaTime: number) {}

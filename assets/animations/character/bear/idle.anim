@@ -9,7 +9,7 @@
     "_native": "",
     "sample": 9,
     "speed": 0.85,
-    "wrapMode": 2,
+    "wrapMode": 0,
     "enableTrsBlending": false,
     "_duration": 1.1111111111111112,
     "_hash": 500763545,
