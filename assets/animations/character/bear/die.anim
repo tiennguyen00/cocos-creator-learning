@@ -1,14 +1,14 @@
 [
   {
     "__type__": "cc.AnimationClip",
-    "_name": "hit",
+    "_name": "die",
     "_objFlags": 0,
     "__editorExtras__": {
       "embeddedPlayerGroups": []
     },
     "_native": "",
     "sample": 9,
-    "speed": 1.5,
+    "speed": 1,
     "wrapMode": 2,
     "enableTrsBlending": false,
     "_duration": 1.1111111111111112,
@@ -72,7 +72,7 @@
         "__expectedType__": "cc.SpriteFrame"
       },
       {
-        "__uuid__": "f8bd35f9-3a35-4502-a90f-25a4a2c2e3f6@f9941",
+        "__uuid__": "4b769790-2237-4e6e-af28-c66eafa7e6fb@f9941",
         "__expectedType__": "cc.SpriteFrame"
       },
       {
@@ -80,7 +80,7 @@
         "__expectedType__": "cc.SpriteFrame"
       },
       {
-        "__uuid__": "f8bd35f9-3a35-4502-a90f-25a4a2c2e3f6@f9941",
+        "__uuid__": "e6a6f7c9-e129-4b44-9793-b74672943afd@f9941",
         "__expectedType__": "cc.SpriteFrame"
       }
     ]

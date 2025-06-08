@@ -12,6 +12,7 @@ import {
   Contact2DType,
   find,
   AudioSource,
+  ProgressBar,
 } from "cc";
 import { Base, BaseState } from "./Base";
 const { ccclass, property } = _decorator;
@@ -50,6 +51,9 @@ export class Character extends Base {
   private collider: BoxCollider2D;
   private audioSource: AudioSource;
   private moveDir: number = 0;
+  private hpBar: ProgressBar = null;
+  private mpBar: ProgressBar = null;
+  private maxHealth: number = 250;
 
   onLoad() {
     this.anim = this.getComponent(Animation);
@@ -60,12 +64,14 @@ export class Character extends Base {
     this.hitBox = find("Canvas/GirlCharacter/hitbox").getComponent(
       BoxCollider2D
     );
+    this.hpBar = find("Canvas/UICamera/CharStas/Hp").getComponent(ProgressBar);
+    this.mpBar = find("Canvas/UICamera/CharStas/Mp").getComponent(ProgressBar);
     input.on(Input.EventType.KEY_DOWN, this.onKeyDown, this);
     input.on(Input.EventType.KEY_UP, this.onKeyUp, this);
   }
 
   start() {
-    this.init(100, 10, 50);
+    this.init(this.maxHealth, 10, 100);
     this.changeAnim("idle1");
   }
 
@@ -73,6 +79,8 @@ export class Character extends Base {
     if (otherCollider.node.name === "hitboxEne") {
       console.log("Character: hitboxEne");
       // effect when user was hit by enemy
+      this.takeDamage(10);
+      this.hpBar.progress = this.health / this.maxHealth;
       this.changeState(BaseState.HURT, "hurt1");
       this.body.applyLinearImpulseToCenter(new Vec2(80, 80), true);
       this.audioSource.play();

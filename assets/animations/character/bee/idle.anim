@@ -1,14 +1,14 @@
 [
   {
     "__type__": "cc.AnimationClip",
-    "_name": "hit",
+    "_name": "idle",
     "_objFlags": 0,
     "__editorExtras__": {
       "embeddedPlayerGroups": []
     },
     "_native": "",
     "sample": 9,
-    "speed": 1.5,
+    "speed": 1,
     "wrapMode": 2,
     "enableTrsBlending": false,
     "_duration": 1.1111111111111112,
@@ -68,19 +68,19 @@
     ],
     "_values": [
       {
-        "__uuid__": "5f50bb88-ffd3-4c24-813b-527bdc19aa71@f9941",
+        "__uuid__": "25108838-b031-4bcd-9448-d579560ec502@f9941",
         "__expectedType__": "cc.SpriteFrame"
       },
       {
-        "__uuid__": "f8bd35f9-3a35-4502-a90f-25a4a2c2e3f6@f9941",
+        "__uuid__": "74fdd6cf-2a83-4023-80f4-1404be783ac8@f9941",
         "__expectedType__": "cc.SpriteFrame"
       },
       {
-        "__uuid__": "2899f185-533b-480f-bac3-4039b244c6b4@f9941",
+        "__uuid__": "a1ee6d01-37b1-46dc-b6a5-b609a93b5ef3@f9941",
         "__expectedType__": "cc.SpriteFrame"
       },
       {
-        "__uuid__": "f8bd35f9-3a35-4502-a90f-25a4a2c2e3f6@f9941",
+        "__uuid__": "0563a4a0-735b-4fb6-be74-2ba95367ae1a@f9941",
         "__expectedType__": "cc.SpriteFrame"
       }
     ]

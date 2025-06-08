@@ -12,6 +12,9 @@ import {
   instantiate,
   PhysicsSystem2D,
   EPhysics2DDrawFlags,
+  ProgressBar,
+  RigidBody2D,
+  Vec2,
 } from "cc";
 import { CameraShake } from "../utils/CameraShake";
 import { BaseState } from "../state/Base";
@@ -24,18 +27,22 @@ export class ObjectHurt extends Component {
   private cameraShake = null;
   private camera = null;
   private enemy = null;
+  private hpBar = null;
+  public playerScript = null;
 
   @property(Prefab)
   public hitEff: Prefab = null;
 
   protected onLoad(): void {
-    PhysicsSystem2D.instance.debugDrawFlags = EPhysics2DDrawFlags.Aabb;
+    // PhysicsSystem2D.instance.debugDrawFlags = EPhysics2DDrawFlags.Aabb;
+    this.playerScript = find("Canvas/GirlCharacter").getComponent("Character");
     this.collider = this.node.getComponent(BoxCollider2D);
     this.audioSource = this.getComponent(AudioSource);
     this.camera = find("Canvas/PlayerFollower/Camera");
     this.cameraShake = this.camera.getComponent(CameraShake);
     this.collider.on(Contact2DType.BEGIN_CONTACT, this.onBeginContact, this);
     this.enemy = this.node.getComponent("Enemy");
+    this.hpBar = this.node.getChildByName("Hp").getComponent(ProgressBar);
   }
 
   start() {}
@@ -47,9 +54,19 @@ export class ObjectHurt extends Component {
         "Objecthurt: There is collision with ",
         otherCollider.node.name
       );
-      this.onHitEffect();
-      this.enemy.changeState(BaseState.HURT);
-      this.enemy.anim.play("hit");
+
+      if (this.enemy.health == 0 && this.enemy.state === BaseState.DEAD) {
+        this.enemy.hitBackTimer = 0.5;
+        if (!this.enemy.anim.getState("die")?.isPlaying) {
+          this.enemy.anim.play("die");
+        }
+      } else {
+        this.playerScript.attack(this.enemy);
+        this.hpBar.progress = this.enemy.health / this.enemy.maxHealth;
+        this.onHitEffect();
+        this.enemy.changeState(BaseState.HURT);
+        this.enemy.anim.play("hit");
+      }
     }
   }
 

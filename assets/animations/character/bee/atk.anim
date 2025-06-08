@@ -1,28 +1,31 @@
 [
   {
     "__type__": "cc.AnimationClip",
-    "_name": "hit",
+    "_name": "atk",
     "_objFlags": 0,
     "__editorExtras__": {
       "embeddedPlayerGroups": []
     },
     "_native": "",
     "sample": 9,
-    "speed": 1.5,
-    "wrapMode": 2,
+    "speed": 3,
+    "wrapMode": 0,
     "enableTrsBlending": false,
     "_duration": 1.1111111111111112,
     "_hash": 500763545,
     "_tracks": [
       {
         "__id__": 1
+      },
+      {
+        "__id__": 6
       }
     ],
     "_exoticAnimation": null,
     "_events": [],
     "_embeddedPlayers": [],
     "_additiveSettings": {
-      "__id__": 6
+      "__id__": 11
     },
     "_auxiliaryCurveEntries": []
   },
@@ -68,21 +71,66 @@
     ],
     "_values": [
       {
-        "__uuid__": "5f50bb88-ffd3-4c24-813b-527bdc19aa71@f9941",
+        "__uuid__": "7f869f0e-0d0b-4d8d-a9e9-452011075bd7@f9941",
         "__expectedType__": "cc.SpriteFrame"
       },
       {
-        "__uuid__": "f8bd35f9-3a35-4502-a90f-25a4a2c2e3f6@f9941",
+        "__uuid__": "af0d8fe4-0ab9-478e-bea0-3600d0ec1865@f9941",
         "__expectedType__": "cc.SpriteFrame"
       },
       {
-        "__uuid__": "2899f185-533b-480f-bac3-4039b244c6b4@f9941",
+        "__uuid__": "6c9cd089-3981-4bcf-bb4b-d5272288af0e@f9941",
         "__expectedType__": "cc.SpriteFrame"
       },
       {
-        "__uuid__": "f8bd35f9-3a35-4502-a90f-25a4a2c2e3f6@f9941",
+        "__uuid__": "4efa7783-78c1-4166-9999-6a5558f9642e@f9941",
         "__expectedType__": "cc.SpriteFrame"
       }
+    ]
+  },
+  {
+    "__type__": "cc.animation.ObjectTrack",
+    "_binding": {
+      "__type__": "cc.animation.TrackBinding",
+      "path": {
+        "__id__": 7
+      },
+      "proxy": null
+    },
+    "_channel": {
+      "__id__": 9
+    }
+  },
+  {
+    "__type__": "cc.animation.TrackPath",
+    "_paths": [
+      {
+        "__id__": 8
+      },
+      "active"
+    ]
+  },
+  {
+    "__type__": "cc.animation.HierarchyPath",
+    "path": "hitboxEne"
+  },
+  {
+    "__type__": "cc.animation.Channel",
+    "_curve": {
+      "__id__": 10
+    }
+  },
+  {
+    "__type__": "cc.ObjectCurve",
+    "_times": [
+      0,
+      0.8888888888888888,
+      1
+    ],
+    "_values": [
+      false,
+      true,
+      false
     ]
   },
   {

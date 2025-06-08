@@ -36,9 +36,19 @@ export class Enemy extends Base {
   @property
   stunForce: number = 5;
 
+  @property
+  maxHealth: number = 100;
+
+  @property
+  power: number = 10;
+
+  @property
+  isFly: boolean = false;
+
   private attackTimer = 0;
 
   private stunTimer = 0;
+  private hitBackTimer = 0;
 
   private anim: Animation;
   private hitBoxEne: Node = null;
@@ -54,13 +64,13 @@ export class Enemy extends Base {
     this.hitBoxEne = this.node.getChildByName("hitboxEne");
     this.player = find("Canvas/GirlCharacter");
     this.playerScript = this.player.getComponent("Character");
+    this.init(this.maxHealth, this.power, -1);
   }
 
   start() {
     this.btRoot = new SelectorNode([
-      new SequenceNode([
-        new ConditionNode(() => this.isHurt() && this.isStun()),
-      ]),
+      new ConditionNode(() => this.isDead()),
+      new ConditionNode(() => this.isHurt() && this.isStun()),
       new SequenceNode([
         new ConditionNode(() => this.isPlayerInAttackRange()),
         new ActionNode(() => this.attackPlayer()),
@@ -75,6 +85,10 @@ export class Enemy extends Base {
 
   isHurt(): boolean {
     return this.state === BaseState.HURT;
+  }
+
+  isDead(): boolean {
+    return this.state === BaseState.DEAD;
   }
 
   isStun(): boolean {
@@ -129,13 +143,21 @@ export class Enemy extends Base {
 
     // Move enemy toward player
     const moveStep = direction.multiplyScalar(this.moveSpeed);
-    moveStep.y = 0;
+    if (!this.isFly) moveStep.y = 0;
     this.node.setWorldPosition(this.node.worldPosition.add(moveStep));
 
-    if (!this.anim.getState("run").isPlaying) {
-      this.changeState(BaseState.RUN);
-      this.anim.play("run");
+    if (this.isFly) {
+      if (!this.anim.getState("idle")?.isPlaying) {
+        this.changeState(BaseState.IDLE);
+        this.anim.play("idle");
+      }
+    } else {
+      if (!this.anim.getState("run")?.isPlaying) {
+        this.changeState(BaseState.RUN);
+        this.anim.play("run");
+      }
     }
+
     return BTStatus.RUNNING;
   }
 
@@ -144,13 +166,15 @@ export class Enemy extends Base {
   }
 
   changeState(newState: BaseState) {
-    if (this.state === newState) return;
+    if (this.state === newState || this.state === BaseState.DEAD) return;
 
     this.state = newState;
 
     if (newState === BaseState.HURT) {
       this.stunTimer = this.stunForce;
     }
+
+    // console.log("changeState: ", newState);
   }
 
   update(dt: number) {
@@ -164,6 +188,16 @@ export class Enemy extends Base {
       this.attackTimer -= dt;
     } else {
       this.attackTimer = 0;
+    }
+
+    if (this.hitBackTimer > 0) {
+      this.hitBackTimer -= dt;
+      this.node.setPosition(
+        this.node.position.x + this.hitBackTimer * 50 * this.player.scale.x,
+        this.node.position.y
+      );
+    } else {
+      this.hitBackTimer = 0;
     }
     this.btRoot.tick();
   }

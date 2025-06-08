@@ -35,6 +35,9 @@ export abstract class Base extends Component {
   get health() {
     return this._health;
   }
+  set health(h: number) {
+    this._health = h;
+  }
   get atkPower() {
     return this._atkPower;
   }
@@ -76,5 +79,15 @@ export abstract class Base extends Component {
         "Attack power must be larger than 0 or character still alive"
       );
     this._atkPower = _power;
+  }
+
+  // Attack
+  attack(target: Base) {
+    if (this.stamina < this._atkPower && this._stamina > 0) {
+      console.warn("Not enough stamina to attack");
+      return;
+    }
+    target.takeDamage(this._atkPower);
+    this.takeStaminaCost(this._atkPower);
   }
 }
