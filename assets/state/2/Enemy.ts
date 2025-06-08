@@ -69,7 +69,9 @@ export class Enemy extends Base {
 
   start() {
     this.btRoot = new SelectorNode([
-      new ConditionNode(() => this.isDead()),
+      new ConditionNode(
+        () => this.isDead() || this.playerScript.state === BaseState.DEAD
+      ),
       new ConditionNode(() => this.isHurt() && this.isStun()),
       new SequenceNode([
         new ConditionNode(() => this.isPlayerInAttackRange()),

@@ -53,7 +53,9 @@ export class Character extends Base {
   private moveDir: number = 0;
   private hpBar: ProgressBar = null;
   private mpBar: ProgressBar = null;
-  private maxHealth: number = 250;
+  private maxHealth: number = 150;
+  private attackPower: number = 10;
+  private maxStamina: number = 100;
 
   onLoad() {
     this.anim = this.getComponent(Animation);
@@ -71,16 +73,20 @@ export class Character extends Base {
   }
 
   start() {
-    this.init(this.maxHealth, 10, 100);
+    this.init(this.maxHealth, this.attackPower, this.maxStamina);
     this.changeAnim("idle1");
   }
 
   onBeginContact(selfCollider: Collider2D, otherCollider: Collider2D) {
     if (otherCollider.node.name === "hitboxEne") {
-      console.log("Character: hitboxEne");
-      // effect when user was hit by enemy
-      this.takeDamage(10);
+      console.log("Character: hitboxEne: ", this.state);
+
+      this.takeDamage(15);
       this.hpBar.progress = this.health / this.maxHealth;
+      if (this.health <= 0) {
+        this.anim.play("dead1");
+        return;
+      }
       this.changeState(BaseState.HURT, "hurt1");
       this.body.applyLinearImpulseToCenter(new Vec2(80, 80), true);
       this.audioSource.play();
@@ -111,7 +117,7 @@ export class Character extends Base {
   changeState(newState: BaseState, anim?: string) {
     if (this.state === newState) return;
     this.state = newState;
-    // console.log("Char State:", newState);
+    console.log("Char State:", newState);
 
     // handle stun
     if (this.state === BaseState.HURT) {
@@ -140,6 +146,7 @@ export class Character extends Base {
   }
 
   onCombo() {
+    if (this.stamina < this.attackPower) return;
     this.moveDir = 0;
     //is onn air?
     if (this.jumpCount > 0) {
@@ -253,6 +260,11 @@ export class Character extends Base {
         this.hitTimer * this.hitForce * this.node.scale.x,
       this.body.linearVelocity.y
     );
+
+    if (this.stamina < this.maxStamina && this.state !== BaseState.DEAD) {
+      this.takeStaminaRest(dt * 10);
+      this.mpBar.progress = this.stamina / this.maxStamina;
+    }
 
     this.updateState();
   }
