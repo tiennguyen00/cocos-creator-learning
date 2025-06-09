@@ -7,7 +7,7 @@ export class PlayerFollower extends Component {
   private player: Node = null;
 
   @property
-  public maxBounds
+  public maxBounds;
 
   start() {}
 

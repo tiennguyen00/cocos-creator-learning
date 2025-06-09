@@ -1,5 +1,5 @@
 import { _decorator, Component, Node, Animation } from "cc";
-import { CharacterState } from "./Character";
+import { BaseState } from "./Base";
 const { ccclass, property } = _decorator;
 
 @ccclass("Anims")
@@ -15,15 +15,15 @@ export class Anims extends Component {
     this.character.emit("compo-attack", this.playAtkCombo, this);
   }
 
-  playAnims(state: CharacterState) {
+  playAnims(state: BaseState) {
     switch (state) {
-      case CharacterState.IDLE:
+      case BaseState.IDLE:
         this.anim.play("idle1");
         break;
-      case CharacterState.RUN:
+      case BaseState.RUN:
         this.anim.play("walk1");
         break;
-      case CharacterState.JUMP:
+      case BaseState.JUMP:
         this.anim.play("jump1");
         break;
     }

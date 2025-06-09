@@ -5,16 +5,13 @@ import {
   Collider2D,
   Component,
   Contact2DType,
-  IPhysics2DContact,
-  Animation,
   find,
   Prefab,
   instantiate,
   PhysicsSystem2D,
   EPhysics2DDrawFlags,
   ProgressBar,
-  RigidBody2D,
-  Vec2,
+  Vec3,
 } from "cc";
 import { CameraShake } from "../utils/CameraShake";
 import { BaseState } from "../state/Base";

@@ -91,6 +91,15 @@ export class Character extends Base {
       this.body.applyLinearImpulseToCenter(new Vec2(80, 80), true);
       this.audioSource.play();
     } else if (otherCollider.node.name === "ground") {
+      console.log("Character: ground: ", this.state);
+      if (this.anim.getState("jump1").isPlaying) {
+        // temp recaculate the animation when user land
+        if (this.moveDir !== 0) {
+          this.changeState(BaseState.RUN, "walk1");
+        } else {
+          this.changeState(BaseState.IDLE, "idle1");
+        }
+      }
       this.onLanded();
     }
   }
