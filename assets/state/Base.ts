@@ -91,4 +91,14 @@ export abstract class Base extends Component {
     target.takeDamage(this._atkPower);
     this.takeStaminaCost(this._atkPower);
   }
+
+  // Dash
+  dash(_value: number) {
+    if (this.stamina < _value && this._stamina > 0) {
+      console.warn("Not enough stamina to dash");
+      return false;
+    }
+    this.takeStaminaCost(_value);
+    return true;
+  }
 }

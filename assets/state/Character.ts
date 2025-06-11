@@ -85,7 +85,7 @@ export class Character extends Base {
 
   start() {
     this.init(this.maxHealth, this.attackPower, this.maxStamina);
-    this.changeAnim("idle1");
+    this.changeState(BaseState.IDLE, "idle1");
   }
   onDestroy() {
     input.off(Input.EventType.KEY_DOWN, this.onKeyDown, this);
@@ -106,7 +106,6 @@ export class Character extends Base {
       this.body.applyLinearImpulseToCenter(new Vec2(80, 80), true);
       this.audioSource.play();
     } else if (otherCollider.node.name === "ground") {
-      console.log("Character: ground: ", this.state);
       if (this.anim.getState("jump1").isPlaying) {
         // temp recaculate the animation when user land
         if (this.moveDir !== 0) {
@@ -128,12 +127,16 @@ export class Character extends Base {
 
   updateState() {
     if (this.preventChangingState()) return;
-    if (
-      this.jumpCount === 0 &&
-      this.moveDir === 0 &&
-      this.comboStep === 0 &&
-      this.dashTimer === 0
-    ) {
+
+    if (this.dashTimer !== 0) {
+      this.changeState(BaseState.DASH, "dash1");
+    } else if (this.jumpCount !== 0) {
+      this.changeState(BaseState.JUMP, "jump1");
+    } else if (this.moveDir !== 0) {
+      this.changeState(BaseState.RUN, "walk1");
+    } else if (this.comboStep !== 0) {
+      this.changeState(BaseState.ATTACK, "atk1");
+    } else {
       this.changeState(BaseState.IDLE, "idle1");
     }
   }
@@ -166,12 +169,10 @@ export class Character extends Base {
       );
       this.jumpCount++;
     }
-    this.changeState(BaseState.JUMP, "jump1");
   }
   onRun(dir: 1 | -1) {
     this.moveDir = dir;
     this.node.setScale(dir, 1, 1);
-    this.changeState(BaseState.RUN, "walk1");
   }
 
   onCombo() {
@@ -179,7 +180,7 @@ export class Character extends Base {
     this.moveDir = 0;
     //is onn air?
     if (this.jumpCount > 0) {
-      this.body.linearDamping = 10;
+      this.body.linearDamping += 10;
     }
     // prevent spamming combo
     if (this.comboTimer >= 0.2) return;
@@ -196,7 +197,6 @@ export class Character extends Base {
     }
 
     this.playComboAnimation(this.comboStep);
-    this.changeState(BaseState.ATTACK, "atk1");
   }
 
   private playComboAnimation(step: number) {
@@ -241,6 +241,8 @@ export class Character extends Base {
           this.onRun(-1);
         } else if (event.keyCode === KeyCode.KEY_D) {
           this.onRun(1);
+        } else if (event.keyCode === KeyCode.SHIFT_LEFT) {
+          this.onDash();
         }
         break;
       case BaseState.RUN:
@@ -248,6 +250,8 @@ export class Character extends Base {
           this.onJump();
         } else if (event.keyCode === KeyCode.KEY_E) {
           this.onCombo();
+        } else if (event.keyCode === KeyCode.SHIFT_LEFT) {
+          this.onDash();
         }
         break;
     }
@@ -259,9 +263,10 @@ export class Character extends Base {
   }
 
   public onDash() {
-    this.changeState(BaseState.DASH, "dash1");
+    if (!this.dash(35)) return;
     this.dashTimer = 0.3;
     this.onDashEffect();
+    this.node.emit("on-dash");
   }
 
   private onDashEffect() {

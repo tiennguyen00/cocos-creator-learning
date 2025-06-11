@@ -1,5 +1,4 @@
-import { _decorator, AudioSource, Component, find, Node } from "cc";
-import { CharacterState } from "./Character";
+import { _decorator, AudioSource, Component, find } from "cc";
 const { ccclass, property } = _decorator;
 
 @ccclass("Sound")
@@ -14,6 +13,7 @@ export class Sound extends Component {
       .getComponents(AudioSource);
 
     this.character.on("compo-attack", this.playAtkSound, this);
+    this.character.on("on-dash", this.playDashSound, this);
   }
 
   playAtkSound(step: number) {
@@ -31,7 +31,7 @@ export class Sound extends Component {
     }
   }
 
-  start() {}
-
-  update(deltaTime: number) {}
+  playDashSound() {
+    this.audioSource[3].playOneShot(this.audioSource[3].clip);
+  }
 }
