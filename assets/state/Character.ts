@@ -13,6 +13,9 @@ import {
   find,
   AudioSource,
   ProgressBar,
+  Prefab,
+  instantiate,
+  UIOpacity,
 } from "cc";
 import { Base, BaseState } from "./Base";
 const { ccclass, property } = _decorator;
@@ -34,6 +37,12 @@ export class Character extends Base {
   @property
   maxCompoTime: number = 1;
 
+  @property
+  dashForce: number = 10;
+
+  @property(Prefab)
+  dashEffect: Prefab = null;
+
   hitBox: BoxCollider2D = null;
 
   private jumpCount = 0;
@@ -45,6 +54,8 @@ export class Character extends Base {
   private stunTimer = 0;
 
   private hitTimer = 0;
+
+  private dashTimer = 0;
 
   private anim: Animation;
   private body: RigidBody2D;
@@ -75,6 +86,10 @@ export class Character extends Base {
   start() {
     this.init(this.maxHealth, this.attackPower, this.maxStamina);
     this.changeAnim("idle1");
+  }
+  onDestroy() {
+    input.off(Input.EventType.KEY_DOWN, this.onKeyDown, this);
+    input.off(Input.EventType.KEY_UP, this.onKeyUp, this);
   }
 
   onBeginContact(selfCollider: Collider2D, otherCollider: Collider2D) {
@@ -113,7 +128,12 @@ export class Character extends Base {
 
   updateState() {
     if (this.preventChangingState()) return;
-    if (this.jumpCount === 0 && this.moveDir === 0 && this.comboStep === 0) {
+    if (
+      this.jumpCount === 0 &&
+      this.moveDir === 0 &&
+      this.comboStep === 0 &&
+      this.dashTimer === 0
+    ) {
       this.changeState(BaseState.IDLE, "idle1");
     }
   }
@@ -201,6 +221,8 @@ export class Character extends Base {
           this.onJump();
         } else if (event.keyCode === KeyCode.KEY_E) {
           this.onCombo();
+        } else if (event.keyCode === KeyCode.SHIFT_LEFT) {
+          this.onDash();
         }
         break;
       case BaseState.ATTACK:
@@ -224,8 +246,7 @@ export class Character extends Base {
       case BaseState.RUN:
         if (event.keyCode === KeyCode.SPACE) {
           this.onJump();
-        }
-        if (event.keyCode === KeyCode.KEY_E) {
+        } else if (event.keyCode === KeyCode.KEY_E) {
           this.onCombo();
         }
         break;
@@ -235,6 +256,27 @@ export class Character extends Base {
     if (event.keyCode === KeyCode.KEY_A || event.keyCode === KeyCode.KEY_D) {
       this.moveDir = 0;
     }
+  }
+
+  public onDash() {
+    this.changeState(BaseState.DASH, "dash1");
+    this.dashTimer = 0.3;
+    this.onDashEffect();
+  }
+
+  private onDashEffect() {
+    const delays = [0.1, 0.12, 0.14, 0.16, 0.18, 0.2];
+
+    for (const delay of delays) {
+      this.scheduleOnce(() => {
+        this.spawnSingleDashEffect();
+      }, delay);
+    }
+  }
+  private spawnSingleDashEffect() {
+    const dashEffect = instantiate(this.dashEffect);
+    this.node.parent.addChild(dashEffect);
+    dashEffect.setPosition(this.node.position);
   }
 
   public onLanded() {
@@ -264,9 +306,16 @@ export class Character extends Base {
       this.comboStep = 0;
     }
 
+    if (this.dashTimer > 0) {
+      this.dashTimer -= dt;
+    } else {
+      this.dashTimer = 0;
+    }
+
     this.body.linearVelocity = new Vec2(
       this.moveDir * this.moveSpeed +
-        this.hitTimer * this.hitForce * this.node.scale.x,
+        this.node.scale.x *
+          (this.hitTimer * this.hitForce + this.dashTimer * this.dashForce),
       this.body.linearVelocity.y
     );
 
