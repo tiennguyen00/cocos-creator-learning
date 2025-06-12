@@ -288,7 +288,7 @@ export class Character extends Base {
   }
 
   public onDash() {
-    // if (!this.dash(35)) return;
+    if (!this.dash(35)) return;
     this.dashTimer = this.dashDuration;
     this.onDashEffect();
     this.node.emit("on-dash");

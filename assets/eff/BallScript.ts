@@ -6,20 +6,24 @@ import {
   Contact2DType,
   find,
   Node,
+  Prefab,
   Vec3,
 } from "cc";
 const { ccclass, property } = _decorator;
 
 @ccclass("BallScript")
 export class BallScript extends Component {
+  @property(Prefab)
+  dustEffect: Prefab = null;
+
   private charScript = null;
   private collider = null;
-  private hp = 3;
 
   onLoad() {
     this.charScript = find("Canvas/GirlCharacter").getComponent("Character");
     this.collider = this.node.getComponent(BoxCollider2D);
     this.collider.on(Contact2DType.BEGIN_CONTACT, this.onBeginContact, this);
+    console.log("BallScript: dustEffect: ", this.dustEffect);
   }
 
   onBeginContact(selfCollider: Collider2D, otherCollider: Collider2D) {
