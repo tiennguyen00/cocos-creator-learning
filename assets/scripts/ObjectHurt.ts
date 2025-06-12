@@ -8,10 +8,9 @@ import {
   find,
   Prefab,
   instantiate,
-  PhysicsSystem2D,
-  EPhysics2DDrawFlags,
   ProgressBar,
-  Vec3,
+  EPhysics2DDrawFlags,
+  PhysicsSystem2D,
 } from "cc";
 import { CameraShake } from "../utils/CameraShake";
 import { BaseState } from "../state/Base";
@@ -45,8 +44,11 @@ export class ObjectHurt extends Component {
   start() {}
 
   onBeginContact(selfCollider: Collider2D, otherCollider: Collider2D) {
-    // only fire this func if it was collided with hitbox player
-    if (otherCollider.node.name === "hitbox") {
+    // only fire this func if it was collided with hitbox player or ballAtk (bullet)
+    if (
+      otherCollider.node.name === "hitbox" ||
+      otherCollider.node.name === "ballAtk"
+    ) {
       console.log(
         "Objecthurt: There is collision with ",
         otherCollider.node.name

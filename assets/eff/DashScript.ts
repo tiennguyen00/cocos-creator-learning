@@ -47,9 +47,9 @@ export class DashScript extends Component {
     if (this.uiOpacity) {
       this.uiOpacity.opacity -= this.fadeSpeed * deltaTime;
 
-      if (this.uiOpacity.opacity <= 0) {
-        this.node.destroy();
-      }
+      // if (this.uiOpacity.opacity <= 0) {
+      //   this.node.destroy();
+      // }
     }
   }
 }

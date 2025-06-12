@@ -8,6 +8,7 @@ export enum BaseState {
   HURT = "hurt",
   RUN = "run",
   DASH = "dash",
+  POWER_UP = "power_up",
 }
 
 export abstract class Base extends Component {

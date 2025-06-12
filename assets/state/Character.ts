@@ -15,9 +15,9 @@ import {
   ProgressBar,
   Prefab,
   instantiate,
-  UIOpacity,
 } from "cc";
 import { Base, BaseState } from "./Base";
+import { ObjectPool } from "./ObjectPool";
 const { ccclass, property } = _decorator;
 
 @ccclass("Character")
@@ -43,6 +43,9 @@ export class Character extends Base {
   @property(Prefab)
   dashEffect: Prefab = null;
 
+  @property(Prefab)
+  powerUpEffect: Prefab = null;
+
   hitBox: BoxCollider2D = null;
 
   private jumpCount = 0;
@@ -55,6 +58,7 @@ export class Character extends Base {
 
   private hitTimer = 0;
 
+  private dashDuration = 0.3;
   private dashTimer = 0;
 
   private anim: Animation;
@@ -67,6 +71,13 @@ export class Character extends Base {
   private maxHealth: number = 150;
   private attackPower: number = 10;
   private maxStamina: number = 100;
+
+  private ballPool = null;
+  private powerUpTimer = 0;
+
+  private dashPool = null;
+
+  private isSuperMode = false;
 
   onLoad() {
     this.anim = this.getComponent(Animation);
@@ -85,11 +96,15 @@ export class Character extends Base {
 
   start() {
     this.init(this.maxHealth, this.attackPower, this.maxStamina);
-    this.changeState(BaseState.IDLE, "idle1");
+    this.ballPool = new ObjectPool(this.powerUpEffect, this.node.parent);
+    this.dashPool = new ObjectPool(this.dashEffect, this.node.parent, 7);
+    this.anim.play("idle1");
   }
   onDestroy() {
     input.off(Input.EventType.KEY_DOWN, this.onKeyDown, this);
     input.off(Input.EventType.KEY_UP, this.onKeyUp, this);
+    this.ballPool.clear();
+    this.dashPool.clear();
   }
 
   onBeginContact(selfCollider: Collider2D, otherCollider: Collider2D) {
@@ -177,6 +192,7 @@ export class Character extends Base {
 
   onCombo() {
     if (this.stamina < this.attackPower) return;
+
     this.moveDir = 0;
     //is onn air?
     if (this.jumpCount > 0) {
@@ -184,6 +200,13 @@ export class Character extends Base {
     }
     // prevent spamming combo
     if (this.comboTimer >= 0.2) return;
+
+    const powerEffect = this.ballPool.get();
+    powerEffect.setPosition(this.node.position);
+    this.powerUpTimer = 0.7;
+    this.scheduleOnce(() => {
+      this.ballPool.put(powerEffect);
+    }, this.powerUpTimer);
 
     this.hitTimer = 0.25;
     this.comboTimer = this.maxCompoTime;
@@ -223,6 +246,8 @@ export class Character extends Base {
           this.onCombo();
         } else if (event.keyCode === KeyCode.SHIFT_LEFT) {
           this.onDash();
+        } else if (event.keyCode === KeyCode.KEY_Q) {
+          this.isSuperMode = !this.isSuperMode;
         }
         break;
       case BaseState.ATTACK:
@@ -263,8 +288,8 @@ export class Character extends Base {
   }
 
   public onDash() {
-    if (!this.dash(35)) return;
-    this.dashTimer = 0.3;
+    // if (!this.dash(35)) return;
+    this.dashTimer = this.dashDuration;
     this.onDashEffect();
     this.node.emit("on-dash");
   }
@@ -274,14 +299,15 @@ export class Character extends Base {
 
     for (const delay of delays) {
       this.scheduleOnce(() => {
-        this.spawnSingleDashEffect();
+        const dashEffect = this.dashPool.get();
+        dashEffect.setPosition(this.node.position);
+
+        this.scheduleOnce(() => {
+          // this.dashPool.put(dashEffect);
+          dashEffect.destroy();
+        }, this.dashDuration);
       }, delay);
     }
-  }
-  private spawnSingleDashEffect() {
-    const dashEffect = instantiate(this.dashEffect);
-    this.node.parent.addChild(dashEffect);
-    dashEffect.setPosition(this.node.position);
   }
 
   public onLanded() {
