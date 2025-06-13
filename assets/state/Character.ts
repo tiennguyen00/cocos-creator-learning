@@ -14,7 +14,7 @@ import {
   AudioSource,
   ProgressBar,
   Prefab,
-  instantiate,
+  SkeletalAnimationState,
 } from "cc";
 import { Base, BaseState } from "./Base";
 import { ObjectPool } from "./ObjectPool";
@@ -64,7 +64,7 @@ export class Character extends Base {
   private anim: Animation;
   private body: RigidBody2D;
   private collider: BoxCollider2D;
-  private audioSource: AudioSource;
+  private audioSource: AudioSource[];
   private moveDir: number = 0;
   private hpBar: ProgressBar = null;
   private mpBar: ProgressBar = null;
@@ -77,13 +77,15 @@ export class Character extends Base {
 
   private dashPool = null;
 
-  private isSuperMode = false;
+  private isPoweringUp = false;
 
   onLoad() {
     this.anim = this.getComponent(Animation);
     this.body = this.getComponent(RigidBody2D);
     this.collider = this.getComponent(BoxCollider2D);
-    this.audioSource = this.getComponent(AudioSource);
+    this.audioSource = find("Canvas/GirlCharacter/sound").getComponents(
+      AudioSource
+    );
     this.collider.on(Contact2DType.BEGIN_CONTACT, this.onBeginContact, this);
     this.hitBox = find("Canvas/GirlCharacter/hitbox").getComponent(
       BoxCollider2D
@@ -100,6 +102,11 @@ export class Character extends Base {
     this.dashPool = new ObjectPool(this.dashEffect, this.node.parent, 7);
     this.anim.play("idle1");
   }
+
+  public onPowerUpAnimEnd() {
+    this.changeState(BaseState.IDLE, "idle1");
+  }
+
   onDestroy() {
     input.off(Input.EventType.KEY_DOWN, this.onKeyDown, this);
     input.off(Input.EventType.KEY_UP, this.onKeyUp, this);
@@ -119,7 +126,7 @@ export class Character extends Base {
       }
       this.changeState(BaseState.HURT, "hurt1");
       this.body.applyLinearImpulseToCenter(new Vec2(80, 80), true);
-      this.audioSource.play();
+      this.audioSource[6].play();
     } else if (otherCollider.node.name === "ground") {
       if (this.anim.getState("jump1").isPlaying) {
         // temp recaculate the animation when user land
@@ -136,7 +143,8 @@ export class Character extends Base {
   preventChangingState() {
     return (
       this.state === BaseState.DEAD ||
-      (this.state === BaseState.HURT && this.stunTimer > 0)
+      (this.state === BaseState.HURT && this.stunTimer > 0) ||
+      this.state === BaseState.POWER_UP
     );
   }
 
@@ -201,12 +209,15 @@ export class Character extends Base {
     // prevent spamming combo
     if (this.comboTimer >= 0.2) return;
 
-    const powerEffect = this.ballPool.get();
-    powerEffect.setPosition(this.node.position);
-    this.powerUpTimer = 0.7;
-    this.scheduleOnce(() => {
-      this.ballPool.put(powerEffect);
-    }, this.powerUpTimer);
+    if (this.isPoweringUp) {
+      this.audioSource[5].play();
+      const powerEffect = this.ballPool.get();
+      powerEffect.setPosition(this.node.position);
+      this.powerUpTimer = 0.7;
+      this.scheduleOnce(() => {
+        this.ballPool.put(powerEffect);
+      }, this.powerUpTimer);
+    }
 
     this.hitTimer = 0.25;
     this.comboTimer = this.maxCompoTime;
@@ -247,7 +258,7 @@ export class Character extends Base {
         } else if (event.keyCode === KeyCode.SHIFT_LEFT) {
           this.onDash();
         } else if (event.keyCode === KeyCode.KEY_Q) {
-          this.isSuperMode = !this.isSuperMode;
+          this.onChangeSuperMode();
         }
         break;
       case BaseState.ATTACK:
@@ -312,6 +323,11 @@ export class Character extends Base {
 
   public onLanded() {
     this.jumpCount = 0;
+  }
+
+  public onChangeSuperMode() {
+    this.isPoweringUp = !this.isPoweringUp;
+    this.changeState(BaseState.POWER_UP, "power_up");
   }
 
   update(dt: number) {

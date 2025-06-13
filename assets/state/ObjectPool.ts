@@ -21,7 +21,7 @@ export class ObjectPool {
   }
 
   /** Get an object from the pool */
-  public get(): Node {
+  public get(cb?: () => void): Node {
     let node: Node;
     if (this.pool.length > 0) {
       node = this.pool.pop();
@@ -36,14 +36,16 @@ export class ObjectPool {
         anim.play();
       }
     } catch {}
+    cb?.();
 
     return node;
   }
 
   /** Return the object to the pool */
-  public put(node: Node) {
+  public put(node: Node, cb?: () => void) {
     node.active = false;
     this.pool.push(node);
+    cb?.();
   }
 
   /** Clear the pool */

@@ -59,7 +59,9 @@ export class ObjectHurt extends Component {
         if (!this.enemy.anim.getState("die")?.isPlaying) {
           this.enemy.anim.play("die");
           setTimeout(() => {
-            this.enemy.node.destroy();
+            if (this.enemy) {
+              this.enemy.node.destroy();
+            }
           }, 1000);
         }
       } else {
