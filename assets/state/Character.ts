@@ -137,14 +137,6 @@ export class Character extends Base {
       this.body.applyLinearImpulseToCenter(new Vec2(80, 80), true);
       this.audioSource[6].play();
     } else if (otherCollider.node.name === "ground") {
-      if (this.anim.getState("jump1").isPlaying) {
-        // temp recaculate the animation when user land
-        if (this.moveDir !== 0) {
-          this.changeState(BaseState.RUN, "walk1");
-        } else {
-          this.changeState(BaseState.IDLE, "idle1");
-        }
-      }
       this.onLanded();
     }
   }
@@ -213,7 +205,7 @@ export class Character extends Base {
     this.moveDir = 0;
     //is onn air?
     if (this.jumpCount > 0) {
-      this.body.linearDamping += 10;
+      this.body.linearDamping = 5;
     }
     // prevent spamming combo
     if (this.comboTimer >= 0.2) return;

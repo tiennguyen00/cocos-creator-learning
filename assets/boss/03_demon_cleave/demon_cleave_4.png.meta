@@ -1,0 +1,134 @@
+{
+  "ver": "1.0.27",
+  "importer": "image",
+  "imported": true,
+  "uuid": "cd68721c-e54b-41e9-b6ff-358ed289868a",
+  "files": [
+    ".json",
+    ".png"
+  ],
+  "subMetas": {
+    "6c48a": {
+      "importer": "texture",
+      "uuid": "cd68721c-e54b-41e9-b6ff-358ed289868a@6c48a",
+      "displayName": "demon_cleave_4",
+      "id": "6c48a",
+      "name": "texture",
+      "userData": {
+        "wrapModeS": "clamp-to-edge",
+        "wrapModeT": "clamp-to-edge",
+        "imageUuidOrDatabaseUri": "cd68721c-e54b-41e9-b6ff-358ed289868a",
+        "isUuid": true,
+        "visible": false,
+        "minfilter": "linear",
+        "magfilter": "linear",
+        "mipfilter": "none",
+        "anisotropy": 0
+      },
+      "ver": "1.0.22",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "f9941": {
+      "importer": "sprite-frame",
+      "uuid": "cd68721c-e54b-41e9-b6ff-358ed289868a@f9941",
+      "displayName": "demon_cleave_4",
+      "id": "f9941",
+      "name": "spriteFrame",
+      "userData": {
+        "trimThreshold": 1,
+        "rotated": false,
+        "offsetX": 15,
+        "offsetY": -25.5,
+        "trimX": 116,
+        "trimY": 52,
+        "width": 86,
+        "height": 107,
+        "rawWidth": 288,
+        "rawHeight": 160,
+        "borderTop": 0,
+        "borderBottom": 0,
+        "borderLeft": 0,
+        "borderRight": 0,
+        "packable": true,
+        "pixelsToUnit": 100,
+        "pivotX": 0.5,
+        "pivotY": 0.5,
+        "meshType": 0,
+        "vertices": {
+          "rawPosition": [
+            -43,
+            -53.5,
+            0,
+            43,
+            -53.5,
+            0,
+            -43,
+            53.5,
+            0,
+            43,
+            53.5,
+            0
+          ],
+          "indexes": [
+            0,
+            1,
+            2,
+            2,
+            1,
+            3
+          ],
+          "uv": [
+            116,
+            108,
+            202,
+            108,
+            116,
+            1,
+            202,
+            1
+          ],
+          "nuv": [
+            0.4027777777777778,
+            0.00625,
+            0.7013888888888888,
+            0.00625,
+            0.4027777777777778,
+            0.675,
+            0.7013888888888888,
+            0.675
+          ],
+          "minPos": [
+            -43,
+            -53.5,
+            0
+          ],
+          "maxPos": [
+            43,
+            53.5,
+            0
+          ]
+        },
+        "isUuid": true,
+        "imageUuidOrDatabaseUri": "cd68721c-e54b-41e9-b6ff-358ed289868a@6c48a",
+        "atlasUuid": "",
+        "trimType": "auto"
+      },
+      "ver": "1.0.12",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    }
+  },
+  "userData": {
+    "type": "sprite-frame",
+    "hasAlpha": true,
+    "fixAlphaTransparencyArtifacts": false,
+    "redirect": "cd68721c-e54b-41e9-b6ff-358ed289868a@6c48a"
+  }
+}

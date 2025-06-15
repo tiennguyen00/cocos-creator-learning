@@ -31,7 +31,7 @@ export class ObjectHurt extends Component {
 
   protected onLoad(): void {
     // PhysicsSystem2D.instance.debugDrawFlags = EPhysics2DDrawFlags.Aabb;
-    this.playerScript = find("Canvas/GirlCharacter").getComponent("Character");
+    this.playerScript = find("PersistNode").getComponent("PersistNode");
     this.collider = this.node.getComponent(BoxCollider2D);
     this.audioSource = this.getComponent(AudioSource);
     this.camera = find("Canvas/PlayerFollower/Camera");
@@ -55,7 +55,7 @@ export class ObjectHurt extends Component {
       );
 
       if (this.enemy.health == 0 && this.enemy.state === BaseState.DEAD) {
-        this.enemy.hitBackTimer = 0.5;
+        // this.enemy.hitBackTimer = 0.5;
         if (!this.enemy.anim.getState("die")?.isPlaying) {
           this.enemy.anim.play("die");
           setTimeout(() => {
@@ -65,11 +65,13 @@ export class ObjectHurt extends Component {
           }, 1000);
         }
       } else {
-        this.playerScript.attack(this.enemy);
+        this.playerScript.charScript.attack(this.enemy);
         this.hpBar.progress = this.enemy.health / this.enemy.maxHealth;
         this.onHitEffect();
         this.enemy.changeState(BaseState.HURT);
-        this.enemy.anim.play("hit");
+        if (!this.enemy.anim.getState("hit")?.isPlaying) {
+          this.enemy.anim.play("hit");
+        }
       }
     }
   }
