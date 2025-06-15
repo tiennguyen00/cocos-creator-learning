@@ -14,10 +14,11 @@ import {
   AudioSource,
   ProgressBar,
   Prefab,
-  SkeletalAnimationState,
+  Node,
 } from "cc";
 import { Base, BaseState } from "./Base";
 import { ObjectPool } from "./ObjectPool";
+import { PersistNode } from "../scripts/PersistNode";
 const { ccclass, property } = _decorator;
 
 @ccclass("Character")
@@ -48,6 +49,8 @@ export class Character extends Base {
 
   hitBox: BoxCollider2D = null;
 
+  private persistScript = null;
+
   private jumpCount = 0;
   private jumpMax = 2;
 
@@ -77,8 +80,6 @@ export class Character extends Base {
 
   private dashPool = null;
 
-  private isPoweringUp = false;
-
   onLoad() {
     this.anim = this.getComponent(Animation);
     this.body = this.getComponent(RigidBody2D);
@@ -90,8 +91,10 @@ export class Character extends Base {
     this.hitBox = find("Canvas/GirlCharacter/hitbox").getComponent(
       BoxCollider2D
     );
+
     this.hpBar = find("Canvas/UICamera/CharStas/Hp").getComponent(ProgressBar);
     this.mpBar = find("Canvas/UICamera/CharStas/Mp").getComponent(ProgressBar);
+
     input.on(Input.EventType.KEY_DOWN, this.onKeyDown, this);
     input.on(Input.EventType.KEY_UP, this.onKeyUp, this);
   }
@@ -101,6 +104,12 @@ export class Character extends Base {
     this.ballPool = new ObjectPool(this.powerUpEffect, this.node.parent);
     this.dashPool = new ObjectPool(this.dashEffect, this.node.parent, 7);
     this.anim.play("idle1");
+
+    this.persistScript =
+      find("PersistNode").getComponent(PersistNode)?.charScript;
+
+    this.hpBar.progress = this.persistScript.health / this.maxHealth;
+    this.mpBar.progress = this.persistScript.stamina / this.maxStamina;
   }
 
   public onPowerUpAnimEnd() {
@@ -116,11 +125,11 @@ export class Character extends Base {
 
   onBeginContact(selfCollider: Collider2D, otherCollider: Collider2D) {
     if (otherCollider.node.name === "hitboxEne") {
-      console.log("Character: hitboxEne: ", this.state);
+      console.log("Character: hitboxEne: ", this.persistScript.state);
 
-      this.takeDamage(15);
-      this.hpBar.progress = this.health / this.maxHealth;
-      if (this.health <= 0) {
+      this.persistScript?.takeDamage(15);
+      this.hpBar.progress = this.persistScript?.health / this.maxHealth;
+      if (this.persistScript?.health <= 0) {
         this.anim.play("dead1");
         return;
       }
@@ -142,9 +151,9 @@ export class Character extends Base {
 
   preventChangingState() {
     return (
-      this.state === BaseState.DEAD ||
-      (this.state === BaseState.HURT && this.stunTimer > 0) ||
-      this.state === BaseState.POWER_UP
+      this.persistScript.state === BaseState.DEAD ||
+      (this.persistScript.state === BaseState.HURT && this.stunTimer > 0) ||
+      this.persistScript.state === BaseState.POWER_UP
     );
   }
 
@@ -170,12 +179,12 @@ export class Character extends Base {
   }
 
   changeState(newState: BaseState, anim?: string) {
-    if (this.state === newState) return;
-    this.state = newState;
+    if (this.persistScript.state === newState) return;
+    this.persistScript.state = newState;
     console.log("Char State:", newState);
 
     // handle stun
-    if (this.state === BaseState.HURT) {
+    if (this.persistScript.state === BaseState.HURT) {
       this.stunTimer = this.stunForce;
     }
     this.changeAnim(anim);
@@ -199,7 +208,7 @@ export class Character extends Base {
   }
 
   onCombo() {
-    if (this.stamina < this.attackPower) return;
+    if (this.persistScript?.stamina < this.attackPower) return;
 
     this.moveDir = 0;
     //is onn air?
@@ -209,7 +218,7 @@ export class Character extends Base {
     // prevent spamming combo
     if (this.comboTimer >= 0.2) return;
 
-    if (this.isPoweringUp) {
+    if (this.persistScript.isPoweringUp) {
       this.audioSource[5].play();
       const powerEffect = this.ballPool.get();
       powerEffect.setPosition(this.node.position);
@@ -245,7 +254,7 @@ export class Character extends Base {
   onKeyDown(event: EventKeyboard) {
     if (this.preventChangingState()) return;
 
-    switch (this.state) {
+    switch (this.persistScript.state) {
       case BaseState.IDLE:
         if (event.keyCode === KeyCode.KEY_A) {
           this.onRun(-1);
@@ -299,7 +308,7 @@ export class Character extends Base {
   }
 
   public onDash() {
-    if (!this.dash(35)) return;
+    if (!this.persistScript?.dash(35)) return;
     this.dashTimer = this.dashDuration;
     this.onDashEffect();
     this.node.emit("on-dash");
@@ -326,7 +335,7 @@ export class Character extends Base {
   }
 
   public onChangeSuperMode() {
-    this.isPoweringUp = !this.isPoweringUp;
+    this.persistScript.isPoweringUp = !this.persistScript?.isPoweringUp;
     this.changeState(BaseState.POWER_UP, "power_up");
   }
 
@@ -366,9 +375,12 @@ export class Character extends Base {
       this.body.linearVelocity.y
     );
 
-    if (this.stamina < this.maxStamina && this.state !== BaseState.DEAD) {
-      this.takeStaminaRest(dt * 10);
-      this.mpBar.progress = this.stamina / this.maxStamina;
+    if (
+      this.persistScript?.stamina < this.maxStamina &&
+      this.persistScript.state !== BaseState.DEAD
+    ) {
+      this.persistScript?.takeStaminaRest(dt * 10);
+      this.mpBar.progress = this.persistScript?.stamina / this.maxStamina;
     }
 
     this.updateState();
