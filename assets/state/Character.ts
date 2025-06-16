@@ -134,7 +134,7 @@ export class Character extends Base {
         return;
       }
       this.changeState(BaseState.HURT, "hurt1");
-      this.body.applyLinearImpulseToCenter(new Vec2(80, 80), true);
+      // this.body.applyLinearImpulseToCenter(new Vec2(80, 80), true);
       this.audioSource[6].play();
     } else if (otherCollider.node.name === "ground") {
       this.onLanded();

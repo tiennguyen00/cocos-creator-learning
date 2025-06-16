@@ -1,28 +1,27 @@
 import {
   _decorator,
-  Node,
+  Component,
   find,
+  Node,
+  Vec3,
   Animation,
   BoxCollider2D,
-  Vec3,
-  director,
-  game,
 } from "cc";
-const { ccclass, property } = _decorator;
 import { Base, BaseState } from "../Base";
 import {
+  SelectorNode,
+  ConditionNode,
+  SequenceNode,
   ActionNode,
   BTStatus,
-  ConditionNode,
-  SelectorNode,
-  SequenceNode,
 } from "./Nodes";
 import { PersistNode } from "../../scripts/PersistNode";
+const { ccclass, property } = _decorator;
 
-@ccclass("Enemy")
-export class Enemy extends Base {
+@ccclass("Boss")
+export class Boss extends Base {
   @property
-  moveSpeed: number = 1 / 5;
+  moveSpeed: number = 1;
 
   @property
   attackRange: number = 50;
@@ -103,10 +102,9 @@ export class Enemy extends Base {
 
   isPlayerInAttackRange(): boolean {
     const dist = Vec3.distance(
-      this.hitBoxEne.worldPosition,
+      this.node.worldPosition,
       this.player.worldPosition
     );
-    // console.log("isPlayerInAttackRange: ", dist);
     return (
       dist <= this.attackRange || this.persistScript.state === BaseState.HURT
     );
@@ -123,12 +121,12 @@ export class Enemy extends Base {
   attackPlayer(): BTStatus {
     if (this.attackTimer === 0) {
       this.changeState(BaseState.ATTACK);
-      this.anim.play("atk");
+      this.anim.play("cleave");
       this.attackTimer = this.attackCooldown;
     } else {
       if (
-        !this.anim.getState("idle").isPlaying &&
-        !this.anim.getState("atk").isPlaying
+        !this.anim.getState("idle")?.isPlaying &&
+        !this.anim.getState("cleave").isPlaying
       ) {
         this.changeState(BaseState.IDLE);
         this.anim.play("idle");

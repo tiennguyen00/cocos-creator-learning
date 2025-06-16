@@ -34,10 +34,11 @@ export class ObjectHurt extends Component {
     this.playerScript = find("PersistNode").getComponent("PersistNode");
     this.collider = this.node.getComponent(BoxCollider2D);
     this.audioSource = this.getComponent(AudioSource);
-    this.camera = find("Canvas/PlayerFollower/Camera");
+    this.camera = find("Canvas/PlayerFollower/Camera") || find("Canvas/Camera");
     this.cameraShake = this.camera.getComponent(CameraShake);
     this.collider.on(Contact2DType.BEGIN_CONTACT, this.onBeginContact, this);
-    this.enemy = this.node.getComponent("Enemy");
+    this.enemy =
+      this.node.getComponent("Enemy") || this.node.getComponent("Boss");
     this.hpBar = this.node.getChildByName("Hp").getComponent(ProgressBar);
   }
 
@@ -80,8 +81,8 @@ export class ObjectHurt extends Component {
     const HITEFF = instantiate(this.hitEff);
     HITEFF.parent = this.node.parent;
     HITEFF.setPosition(this.node.position.x, this.node.position.y, 0);
-    this.audioSource.play();
-    this.cameraShake.shake(0.71, 2);
+    // this.audioSource.play();
+    // this.cameraShake.shake(0.71, 2);
     setTimeout(() => {
       HITEFF.destroy();
     }, 500);
