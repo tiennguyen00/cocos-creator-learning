@@ -15,6 +15,7 @@ export class PersistNode extends Component {
 
   onLoad() {
     this.charScript = find("Canvas/GirlCharacter").getComponent("Character");
+    console.log("this.charactert: ", this.charScript);
   }
 
   start() {
