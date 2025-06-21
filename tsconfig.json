@@ -5,6 +5,7 @@
   /* Add your custom configuration here. */
   "compilerOptions": {
     "strict": false,
-    "experimentalDecorators": true
+    "experimentalDecorators": true,
+    "allowSyntheticDefaultImports": true // Needs to be turned on
   }
 }
