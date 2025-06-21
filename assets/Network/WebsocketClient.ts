@@ -1,43 +1,64 @@
-// import * as protobuf from "../proto-generated/chat_pb";
+import { ProtoManager } from "../scripts/ProtoManager";
 
-// export class WebSocketClient {
-//   private ws: WebSocket;
+export class WebSocketClient {
+  private static instance: WebSocketClient;
+  private socket: WebSocket | null = null;
+  private messageCallback?: (event: MessageEvent) => void;
 
-//   constructor(serverUrl: string) {
-//     this.ws = new WebSocket(serverUrl);
-//     this.ws.binaryType = "arraybuffer";
+  private constructor() {}
 
-//     this.ws.onopen = () => {
-//       console.log("WebSocket connected");
+  public static getInstance(): WebSocketClient {
+    if (!WebSocketClient.instance) {
+      WebSocketClient.instance = new WebSocketClient();
+    }
+    return WebSocketClient.instance;
+  }
 
-//       // Send a protobuf-encoded message
-//       const message = protobuf.ChatMessage.create({
-//         sender: "Player1",
-//         content: "Hello World!",
-//       });
+  public connect(
+    url: string,
+    onMessageCallback?: (event: MessageEvent) => void
+  ): void {
+    if (this.socket) {
+      this.socket.close();
+    }
+    this.socket = new WebSocket(url);
+    this.socket.binaryType = "arraybuffer";
+    this.messageCallback = onMessageCallback;
 
-//       const buffer = protobuf.ChatMessage.encode(message).finish();
-//       this.ws.send(buffer);
-//     };
+    this.socket.onopen = () => {
+      console.log("WebSocket connected");
+    };
 
-//     this.ws.onmessage = (event) => {
-//       const data = new Uint8Array(event.data);
-//       const message = protobuf.ChatMessage.decode(data);
-//       console.log(`[${message.sender}] says: ${message.content}`);
-//     };
+    this.socket.onmessage = (event) => {
+      if (this.messageCallback) {
+        this.messageCallback(event);
+      } else {
+        console.log("Message from server:", event.data);
+      }
+    };
 
-//     this.ws.onerror = (err) => {
-//       console.error("WebSocket error:", err);
-//     };
+    this.socket.onerror = (error) => {
+      console.error("WebSocket error:", error);
+    };
 
-//     this.ws.onclose = () => {
-//       console.log("WebSocket closed");
-//     };
-//   }
+    this.socket.onclose = () => {
+      console.log("WebSocket disconnected");
+    };
+  }
 
-//   sendMessage(sender: string, content: string) {
-//     const message = protobuf.ChatMessage.create({ sender, content });
-//     const buffer = protobuf.ChatMessage.encode(message).finish();
-//     this.ws.send(buffer);
-//   }
-// }
+  public send(message: string): void {
+    console.log(this.socket, this.socket.readyState);
+    if (this.socket && this.socket.readyState === WebSocket.OPEN) {
+      this.socket.send(message);
+    } else {
+      console.warn("WebSocket not connected");
+    }
+  }
+
+  public disconnect(): void {
+    if (this.socket) {
+      this.socket.close();
+      this.socket = null;
+    }
+  }
+}

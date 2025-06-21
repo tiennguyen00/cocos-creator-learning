@@ -6,5 +6,8 @@
   },
   "devDependencies": {
     "protobufjs": "^7.5.3"
+  },
+  "dependencies": {
+    "ws": "^8.18.2"
   }
 }
