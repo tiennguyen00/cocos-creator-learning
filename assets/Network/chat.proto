@@ -5,7 +5,7 @@ message ChatMessage {
   string senderId = 1;        
   string senderName = 2;      
   string content = 3;         
-  int64 timestamp = 4;        
+  string timestamp = 4;        
 }
 
 message SendMessageRequest {

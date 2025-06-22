@@ -24,6 +24,7 @@ export class ObjectHurt extends Component {
   private camera = null;
   private enemy = null;
   private hpBar = null;
+  public persistScript = null;
   public playerScript = null;
 
   @property(Prefab)
@@ -31,7 +32,7 @@ export class ObjectHurt extends Component {
 
   protected onLoad(): void {
     // PhysicsSystem2D.instance.debugDrawFlags = EPhysics2DDrawFlags.Aabb;
-    this.playerScript = find("PersistNode").getComponent("PersistNode");
+    this.persistScript = find("PersistNode").getComponent("PersistScript");
     this.collider = this.node.getComponent(BoxCollider2D);
     this.audioSource = this.getComponent(AudioSource);
     this.camera = find("Canvas/PlayerFollower/Camera") || find("Canvas/Camera");
@@ -42,7 +43,9 @@ export class ObjectHurt extends Component {
     this.hpBar = this.node.getChildByName("Hp").getComponent(ProgressBar);
   }
 
-  start() {}
+  start() {
+    this.playerScript = this.persistScript.playerScript;
+  }
 
   onBeginContact(selfCollider: Collider2D, otherCollider: Collider2D) {
     // only fire this func if it was collided with hitbox player or ballAtk (bullet)
@@ -66,7 +69,7 @@ export class ObjectHurt extends Component {
           }, 1000);
         }
       } else {
-        this.playerScript.charScript.attack(this.enemy);
+        this.playerScript.attack(this.enemy);
         this.hpBar.progress = this.enemy.health / this.enemy.maxHealth;
         this.onHitEffect();
         this.enemy.changeState(BaseState.HURT);

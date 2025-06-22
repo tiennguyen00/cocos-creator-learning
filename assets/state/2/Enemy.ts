@@ -17,7 +17,6 @@ import {
   SelectorNode,
   SequenceNode,
 } from "./Nodes";
-import { PersistNode } from "../../scripts/PersistNode";
 
 @ccclass("Enemy")
 export class Enemy extends Base {
@@ -55,6 +54,7 @@ export class Enemy extends Base {
   private hitBoxEne: Node = null;
   public player: Node = null;
   public persistScript = null;
+  private playerScript = null;
 
   private eslaped = 0;
 
@@ -66,12 +66,15 @@ export class Enemy extends Base {
     this.player = find("Canvas/GirlCharacter");
 
     this.init(this.maxHealth, this.power, -1);
+    this.persistScript = find("PersistNode").getComponent("PersistScript");
   }
 
   start() {
+    this.playerScript = this.persistScript.playerScript;
+
     this.btRoot = new SelectorNode([
       new ConditionNode(
-        () => this.isDead() || this.persistScript.state === BaseState.DEAD
+        () => this.isDead() || this.playerScript.state === BaseState.DEAD
       ),
       new ConditionNode(() => this.isHurt() && this.isStun()),
       new SequenceNode([
@@ -84,9 +87,6 @@ export class Enemy extends Base {
       ]),
       new ActionNode(() => this.patrolArea()),
     ]);
-
-    this.persistScript =
-      find("PersistNode").getComponent(PersistNode)?.charScript;
   }
 
   isHurt(): boolean {
@@ -106,9 +106,8 @@ export class Enemy extends Base {
       this.hitBoxEne.worldPosition,
       this.player.worldPosition
     );
-    // console.log("isPlayerInAttackRange: ", dist);
     return (
-      dist <= this.attackRange || this.persistScript.state === BaseState.HURT
+      dist <= this.attackRange || this.playerScript.state === BaseState.HURT
     );
   }
 
@@ -182,6 +181,8 @@ export class Enemy extends Base {
 
     // console.log("changeState: ", newState);
   }
+
+  onBef;
 
   update(dt: number) {
     if (this.stunTimer > 0) {

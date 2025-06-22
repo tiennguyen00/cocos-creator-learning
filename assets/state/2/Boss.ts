@@ -15,7 +15,6 @@ import {
   ActionNode,
   BTStatus,
 } from "./Nodes";
-import { PersistNode } from "../../scripts/PersistNode";
 const { ccclass, property } = _decorator;
 
 @ccclass("Boss")
@@ -54,6 +53,7 @@ export class Boss extends Base {
   private hitBoxEne: Node = null;
   public player: Node = null;
   public persistScript = null;
+  private playerScript = null;
 
   private eslaped = 0;
 
@@ -65,12 +65,14 @@ export class Boss extends Base {
     this.player = find("Canvas/GirlCharacter");
 
     this.init(this.maxHealth, this.power, -1);
+    this.persistScript = find("PersistNode").getComponent("PersistScript");
   }
 
   start() {
+    this.playerScript = this.persistScript.playerScript;
     this.btRoot = new SelectorNode([
       new ConditionNode(
-        () => this.isDead() || this.persistScript.state === BaseState.DEAD
+        () => this.isDead() || this.playerScript.state === BaseState.DEAD
       ),
       new ConditionNode(() => this.isHurt() && this.isStun()),
       new SequenceNode([
@@ -83,9 +85,6 @@ export class Boss extends Base {
       ]),
       new ActionNode(() => this.patrolArea()),
     ]);
-
-    this.persistScript =
-      find("PersistNode").getComponent(PersistNode)?.charScript;
   }
 
   isHurt(): boolean {
@@ -106,7 +105,7 @@ export class Boss extends Base {
       this.player.worldPosition
     );
     return (
-      dist <= this.attackRange || this.persistScript.state === BaseState.HURT
+      dist <= this.attackRange || this.playerScript.state === BaseState.HURT
     );
   }
 

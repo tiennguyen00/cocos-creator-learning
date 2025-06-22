@@ -7,5 +7,7 @@
   "devDependencies": {
     "protobufjs": "^7.5.3"
   },
-  "dependencies": {}
+  "dependencies": {
+    "date-fns": "^4.1.0"
+  }
 }

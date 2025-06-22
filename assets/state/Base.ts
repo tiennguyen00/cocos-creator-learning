@@ -40,11 +40,16 @@ export abstract class Base extends Component {
   set health(h: number) {
     this._health = h;
   }
-  get atkPower() {
-    return this._atkPower;
-  }
+
   get stamina() {
     return this._stamina;
+  }
+  set stamina(value: number) {
+    this._stamina = value;
+  }
+
+  get atkPower() {
+    return this._atkPower;
   }
 
   takeDamage(damage: number) {

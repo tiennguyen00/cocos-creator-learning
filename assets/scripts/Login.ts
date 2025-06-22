@@ -1,4 +1,4 @@
-import { _decorator, Component, director, EditBox, find, Node } from "cc";
+import { _decorator, Component, director, find, Node } from "cc";
 const { ccclass, property } = _decorator;
 
 @ccclass("Login")
@@ -7,10 +7,17 @@ export class Login extends Component {
   private playerName: string = "";
   private pd = null;
 
+  @property(Node)
+  persistScript = null;
+
   onLoad(): void {
     this.editBox = find("EditBox", this.node);
     this.pd = find("Login", this.node).getComponent("ProtoManager");
     director.preloadScene("scene");
+  }
+
+  start(): void {
+    this.persistScript = find("PersistNode").getComponent("PersistScript");
   }
 
   onEditTextChange(text) {
@@ -18,14 +25,20 @@ export class Login extends Component {
   }
   onLogin() {
     if (this.playerName.length == 0) return;
-    const buf = this.pd.SerializeMsg("ChatMessage", {
-      senderId: "1A",
-      senderName: this.playerName,
-      content: "Helloworld",
-      timestamp: Date.now(),
-    });
-    this.pd.ws.send(buf);
-    // Switch screen:
-    director.loadScene("scene");
+    // const buf = this.pd.SerializeMsg("ChatMessage", {
+    //   senderId: "defaultId",
+    //   senderName: this.playerName,
+    //   content: "Greeting: Helloworld",
+    //   timestamp: Date.now(),
+    // });
+    // this.pd.ws.send(buf);
+    this.persistScript.playerName = this.playerName;
+    this.persistScript.loadScene("scene", () => {});
+  }
+
+  onDestroy() {
+    if (director.isPersistRootNode(this.node)) {
+      director.removePersistRootNode(this.node);
+    }
   }
 }
