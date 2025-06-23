@@ -47,7 +47,6 @@ export class WebSocketClient {
   }
 
   public send(message: string): void {
-    console.log(this.socket, this.socket.readyState);
     if (this.socket && this.socket.readyState === WebSocket.OPEN) {
       this.socket.send(message);
     } else {

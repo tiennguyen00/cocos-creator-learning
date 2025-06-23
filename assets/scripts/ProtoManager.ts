@@ -1,13 +1,4 @@
-import {
-  _decorator,
-  Component,
-  HorizontalTextAlignment,
-  Label,
-  Node,
-  TextAsset,
-  VerticalTextAlignment,
-  Widget,
-} from "cc";
+import { _decorator, Component, find, Label, Node, TextAsset } from "cc";
 const { ccclass, property } = _decorator;
 import protobufjs, { Buffer } from "protobufjs";
 import { WebSocketClient } from "../Network/WebsocketClient";
@@ -21,9 +12,15 @@ export class ProtoManager extends Component {
   @property(Node)
   msgNode: Node = null;
 
+  private persistScript = null;
+
   constructor() {
     super();
     this.onReceiveMsg = this.onReceiveMsg.bind(this);
+  }
+
+  protected onLoad(): void {
+    this.persistScript = find("PersistNode").getComponent("PersistScript");
   }
 
   pb = null;
@@ -50,26 +47,37 @@ export class ProtoManager extends Component {
       "ChatMessage",
       new Uint8Array(event.data)
     );
-    const newNode = new Node();
-    newNode.layer = 4;
-    const newLabel = newNode.addComponent(Label);
+    console.log("Client receive message: ", result);
 
-    newLabel.string = `${result.senderName}(${format(
+    const newNode = new Node();
+    newNode.layer = 5;
+
+    const newLabel = newNode.addComponent(Label);
+    newLabel.string = `${result.senderName} (${format(
       new Date(),
       "hh:mm dd/MM"
     )}): ${result.content}`;
     newLabel.fontSize = 16;
     newLabel.lineHeight = 16;
-    newLabel.horizontalAlign = HorizontalTextAlignment.LEFT;
-    newLabel.verticalAlign = VerticalTextAlignment.TOP;
+    newLabel.enableOutline = true;
+
+    if (this.msgNode.children.length > 4) {
+      this.msgNode.removeChild(this.msgNode.children[0]);
+    }
+
     this.msgNode.addChild(newNode);
   }
 
   protected start(): void {
     this.ws = WebSocketClient.getInstance();
-    this.ws.connect("ws://localhost:5050", this.onReceiveMsg);
+    this.ws.connect(
+      "wss://chores-production-5389.up.railway.app",
+      this.onReceiveMsg
+    );
 
     this.pb = protobufjs.parse(this.schemaProto as any);
+
+    this.persistScript.msgNode = this.msgNode;
   }
 
   // onDestroy() {

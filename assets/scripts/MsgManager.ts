@@ -8,7 +8,6 @@ export class MsgManager extends Component {
 
   onLoad() {
     this.persistScript = find("PersistNode").getComponent("PersistScript");
-    console.log(this.node.layer);
   }
 
   onSend() {
@@ -21,6 +20,7 @@ export class MsgManager extends Component {
       });
       this.persistScript.proto.ws.send(buf);
       this.node.getComponent(EditBox).string = "";
+      this.message = "";
     }
   }
 
