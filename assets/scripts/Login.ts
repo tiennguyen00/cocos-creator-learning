@@ -32,7 +32,6 @@ export class Login extends Component {
     });
 
     this.persistScript.playerName = this.playerName;
-    this.persistScript.loadScene("scene");
   }
 
   onDestroy() {

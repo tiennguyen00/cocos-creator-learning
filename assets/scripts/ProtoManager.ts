@@ -6,6 +6,7 @@ import {
   Label,
   Node,
   TextAsset,
+  Widget,
 } from "cc";
 const { ccclass, property } = _decorator;
 import protobufjs, { Buffer } from "protobufjs";
@@ -28,7 +29,6 @@ export class ProtoManager extends Component {
   }
 
   protected onLoad(): void {
-    director.preloadScene("scene2");
     this.persistScript = find("PersistNode").getComponent("PersistScript");
   }
 
@@ -59,6 +59,8 @@ export class ProtoManager extends Component {
     console.log("Client receive message: ", result);
 
     const newNode = new Node();
+
+    // Set layer for following the camera
     newNode.layer = 5;
 
     const newLabel = newNode.addComponent(Label);
@@ -69,6 +71,10 @@ export class ProtoManager extends Component {
     newLabel.fontSize = 16;
     newLabel.lineHeight = 16;
     newLabel.enableOutline = true;
+
+    const newWidget = newNode.addComponent(Widget);
+    newWidget.node.position.set(-newWidget.left);
+    newWidget.left = 0;
 
     if (this.msgNode.children.length > 4) {
       this.msgNode.removeChild(this.msgNode.children[0]);
@@ -86,7 +92,7 @@ export class ProtoManager extends Component {
 
     this.pb = protobufjs.parse(this.schemaProto as any);
 
-    this.persistScript.msgNode = this.msgNode;
+    // this.persistScript.msgNode = this.msgNode;
   }
 
   // onDestroy() {
