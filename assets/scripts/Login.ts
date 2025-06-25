@@ -1,19 +1,18 @@
-import { _decorator, Component, director, find, Node } from "cc";
+import { _decorator, Canvas, Component, director, find, Node } from "cc";
+import { LoadingManager } from "./LoadingManager";
 const { ccclass, property } = _decorator;
 
 @ccclass("Login")
 export class Login extends Component {
   editBox: Node = null;
   private playerName: string = "";
-  private pd = null;
 
-  @property(Node)
   persistScript = null;
 
   onLoad(): void {
     this.editBox = find("EditBox", this.node);
-    this.pd = find("Login", this.node).getComponent("ProtoManager");
-    director.preloadScene("scene");
+    // preload-forfistTime
+    // director.preloadScene("scene");
   }
 
   start(): void {
@@ -25,15 +24,15 @@ export class Login extends Component {
   }
   onLogin() {
     if (this.playerName.length == 0) return;
-    // const buf = this.pd.SerializeMsg("ChatMessage", {
-    //   senderId: "defaultId",
-    //   senderName: this.playerName,
-    //   content: "Greeting: Helloworld",
-    //   timestamp: Date.now(),
-    // });
-    // this.pd.ws.send(buf);
+
+    director.loadScene("loading", (_, scene) => {
+      const canvas = scene.getChildByName("Canvas");
+      const lLoadingManager = canvas.getComponent(LoadingManager);
+      lLoadingManager.targetScene = "scene";
+    });
+
     this.persistScript.playerName = this.playerName;
-    this.persistScript.loadScene("scene", () => {});
+    this.persistScript.loadScene("scene");
   }
 
   onDestroy() {

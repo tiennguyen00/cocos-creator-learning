@@ -84,8 +84,8 @@ export class ObjectHurt extends Component {
     const HITEFF = instantiate(this.hitEff);
     HITEFF.parent = this.node.parent;
     HITEFF.setPosition(this.node.position.x, this.node.position.y, 0);
-    // this.audioSource.play();
-    // this.cameraShake.shake(0.71, 2);
+    this.audioSource.play();
+    this.cameraShake.shake(0.71, 2);
     setTimeout(() => {
       HITEFF.destroy();
     }, 500);

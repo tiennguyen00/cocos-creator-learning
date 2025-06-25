@@ -1,4 +1,12 @@
-import { _decorator, Component, find, Label, Node, TextAsset } from "cc";
+import {
+  _decorator,
+  Component,
+  director,
+  find,
+  Label,
+  Node,
+  TextAsset,
+} from "cc";
 const { ccclass, property } = _decorator;
 import protobufjs, { Buffer } from "protobufjs";
 import { WebSocketClient } from "../Network/WebsocketClient";
@@ -20,6 +28,7 @@ export class ProtoManager extends Component {
   }
 
   protected onLoad(): void {
+    director.preloadScene("scene2");
     this.persistScript = find("PersistNode").getComponent("PersistScript");
   }
 
