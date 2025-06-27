@@ -1,4 +1,5 @@
 import { Component } from "cc";
+import { EventType, Subject } from "../scripts/ObserverManager";
 
 export enum BaseState {
   IDLE = "idle",
@@ -19,6 +20,9 @@ export abstract class Base extends Component {
   private _stamina: number;
   private _maxStamina: number;
   private _inventorty: number;
+
+  // declaring the subject following the observer pattern
+  private _subject = new Subject();
 
   init(_health: number, _atkPower: number, _stamina: number) {
     this._health = _health;
@@ -48,6 +52,10 @@ export abstract class Base extends Component {
     this._stamina = value;
   }
 
+  get subject() {
+    return this._subject;
+  }
+
   get atkPower() {
     return this._atkPower;
   }
@@ -57,6 +65,7 @@ export abstract class Base extends Component {
       console.warn("Character is dead or damage value is not valid");
     this._health = Math.max(0, this._health - damage);
     if (this._health == 0) {
+      this._subject.notify(EventType.UI, "isDead");
       this.state = BaseState.DEAD;
     }
   }

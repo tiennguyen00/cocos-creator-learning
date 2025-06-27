@@ -17,6 +17,8 @@ import {
   SelectorNode,
   SequenceNode,
 } from "./Nodes";
+import { Subject } from "../../scripts/ObserverManager";
+import { RewardManager } from "../../scripts/RewardManager";
 
 @ccclass("Enemy")
 export class Enemy extends Base {
@@ -56,8 +58,6 @@ export class Enemy extends Base {
   public persistScript = null;
   private playerScript = null;
 
-  private eslaped = 0;
-
   private btRoot: SelectorNode;
 
   onLoad() {
@@ -70,6 +70,10 @@ export class Enemy extends Base {
   }
 
   start() {
+    // Register the observer for this enemy
+    const reward = new RewardManager();
+    this.subject.addObserver(reward);
+
     this.playerScript = this.persistScript.playerScript;
 
     this.btRoot = new SelectorNode([
@@ -181,8 +185,6 @@ export class Enemy extends Base {
 
     // console.log("changeState: ", newState);
   }
-
-  onBef;
 
   update(dt: number) {
     if (this.stunTimer > 0) {

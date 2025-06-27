@@ -60,7 +60,7 @@ export class ProtoManager extends Component {
 
     const newNode = new Node();
 
-    // Set layer for following the camera
+    // Set layer for following the camera (in here is 5)
     newNode.layer = 5;
 
     const newLabel = newNode.addComponent(Label);
@@ -84,6 +84,7 @@ export class ProtoManager extends Component {
   }
 
   protected start(): void {
+    // Start the socket here
     this.ws = WebSocketClient.getInstance();
     this.ws.connect(
       "wss://chores-production-5389.up.railway.app",
@@ -91,8 +92,6 @@ export class ProtoManager extends Component {
     );
 
     this.pb = protobufjs.parse(this.schemaProto as any);
-
-    // this.persistScript.msgNode = this.msgNode;
   }
 
   // onDestroy() {

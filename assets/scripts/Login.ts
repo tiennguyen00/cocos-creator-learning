@@ -5,7 +5,7 @@ const { ccclass, property } = _decorator;
 @ccclass("Login")
 export class Login extends Component {
   editBox: Node = null;
-  private playerName: string = "";
+  private playername: string = "";
 
   persistScript = null;
 
@@ -20,10 +20,10 @@ export class Login extends Component {
   }
 
   onEditTextChange(text) {
-    this.playerName = text;
+    this.playername = text;
   }
   onLogin() {
-    if (this.playerName.length == 0) return;
+    if (this.playername.length == 0) return;
 
     director.loadScene("loading", (_, scene) => {
       const canvas = scene.getChildByName("Canvas");
@@ -31,12 +31,6 @@ export class Login extends Component {
       lLoadingManager.targetScene = "scene";
     });
 
-    this.persistScript.playerName = this.playerName;
-  }
-
-  onDestroy() {
-    if (director.isPersistRootNode(this.node)) {
-      director.removePersistRootNode(this.node);
-    }
+    this.persistScript.name = this.playername;
   }
 }
