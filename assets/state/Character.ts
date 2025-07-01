@@ -104,6 +104,7 @@ export class Character extends Base {
     input.on(Input.EventType.KEY_UP, this.onKeyUp, this);
 
     this.persistScript = find("PersistNode").getComponent("PersistScript");
+
     if (!this.persistScript.playerScript) {
       this.persistScript.playerScript = this;
     }
@@ -150,7 +151,10 @@ export class Character extends Base {
       this.changeState(BaseState.HURT, "hurt1");
       // this.body.applyLinearImpulseToCenter(new Vec2(80, 80), true);
       this.audioSource[6].play();
-    } else if (otherCollider.node.name === "ground") {
+    } else if (
+      otherCollider.node.name === "ground" ||
+      otherCollider.node.name === "cliff"
+    ) {
       this.onLanded();
     }
   }
