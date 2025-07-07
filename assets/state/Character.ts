@@ -108,6 +108,11 @@ export class Character extends Base {
     if (!this.persistScript.playerScript) {
       this.persistScript.playerScript = this;
     }
+    console.log(
+      "playerScript: ",
+      this.persistScript.playerName,
+      this.persistScript
+    );
     this.playerName.string = this.persistScript.playerName;
     this.persistScript.proto = find("Canvas").getComponent("ProtoManager");
   }
@@ -153,7 +158,8 @@ export class Character extends Base {
       this.audioSource[6].play();
     } else if (
       otherCollider.node.name === "ground" ||
-      otherCollider.node.name === "cliff"
+      otherCollider.node.name === "cliff" ||
+      otherCollider.node.name.includes("t_rock")
     ) {
       this.onLanded();
     }
