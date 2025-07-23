@@ -1,9 +1,9 @@
-import { _decorator, Component, Node } from "cc";
+import { _decorator, CCFloat, Component, Node } from "cc";
 const { ccclass, property } = _decorator;
 
 @ccclass("WaveMove")
 export class WaveMove extends Component {
-  @property(Number)
+  @property(CCFloat)
   speed: number = 1;
   prevX = 0;
   start() {

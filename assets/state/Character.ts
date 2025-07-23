@@ -18,6 +18,7 @@ import {
 } from "cc";
 import { Base, BaseState } from "./Base";
 import { ObjectPool } from "./ObjectPool";
+import { RewardManager } from "../scripts/RewardManager";
 const { ccclass, property } = _decorator;
 
 @ccclass("Character")
@@ -71,7 +72,7 @@ export class Character extends Base {
   private hpBar: ProgressBar = null;
   private mpBar: ProgressBar = null;
   private maxHealth: number = 150;
-  private attackPower: number = 10;
+  private attackPower: number = 50;
   private maxStamina: number = 100;
 
   private ballPool = null;
@@ -114,6 +115,9 @@ export class Character extends Base {
   }
 
   start() {
+    const reward = new RewardManager("Character");
+    this.subject.addObserver(reward);
+
     this.ballPool = new ObjectPool(this.powerUpEffect, this.node.parent);
     this.dashPool = new ObjectPool(this.dashEffect, this.node.parent, 7);
     this.anim.play("idle1");
@@ -147,6 +151,8 @@ export class Character extends Base {
         this.persistScript.playerScript.maxHealth;
       if (this.persistScript.playerScript.health <= 0) {
         this.changeState(BaseState.DEAD, "dead1");
+        //need play this dead animation because the preventStateChange will stop the dead animation
+        this.anim.play("dead1");
         return;
       }
       this.changeState(BaseState.HURT, "hurt1");
@@ -174,12 +180,12 @@ export class Character extends Base {
 
     if (this.dashTimer !== 0) {
       this.changeState(BaseState.DASH, "dash1");
+    } else if (this.jumpCount !== 0 && this.comboStep == 0) {
+      this.changeState(BaseState.JUMP, "jump1");
     } else if (this.moveDir !== 0) {
       this.changeState(BaseState.RUN, "walk1");
     } else if (this.comboStep !== 0) {
       this.changeState(BaseState.ATTACK, "atk1");
-    } else if (this.jumpCount !== 0 && this.comboStep == 0) {
-      this.changeState(BaseState.JUMP, "jump1");
     } else {
       this.changeState(BaseState.IDLE, "idle1");
     }

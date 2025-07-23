@@ -65,7 +65,7 @@ export abstract class Base extends Component {
       console.warn("Character is dead or damage value is not valid");
     this._health = Math.max(0, this._health - damage);
     if (this._health == 0) {
-      this._subject.notify(EventType.UI, "isDead");
+      this._subject.notify(EventType.REWARD, "isDead");
       this.state = BaseState.DEAD;
     }
   }

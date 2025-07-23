@@ -69,7 +69,7 @@ export class ObjectHurt extends Component {
           }, 1000);
         }
       } else {
-        // this.playerScript.attack(this.enemy);
+        this.playerScript.attack(this.enemy);
         this.hpBar.progress = this.enemy.health / this.enemy.maxHealth;
         this.onHitEffect();
         this.enemy.changeState(BaseState.HURT);

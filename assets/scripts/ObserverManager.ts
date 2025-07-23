@@ -10,9 +10,7 @@ export enum EventType {
 }
 
 export class Observer {
-  update(eventType: EventType, data?: any) {
-    console.log("This is the eventType:, " + eventType);
-  }
+  update(eventType: EventType, data?: any) {}
 }
 
 export class Subject {

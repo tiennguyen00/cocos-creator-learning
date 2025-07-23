@@ -5,8 +5,8 @@ import {
   Animation,
   BoxCollider2D,
   Vec3,
-  director,
-  game,
+  Prefab,
+  instantiate,
 } from "cc";
 const { ccclass, property } = _decorator;
 import { Base, BaseState } from "../Base";
@@ -17,7 +17,6 @@ import {
   SelectorNode,
   SequenceNode,
 } from "./Nodes";
-import { Subject } from "../../scripts/ObserverManager";
 import { RewardManager } from "../../scripts/RewardManager";
 
 @ccclass("Enemy")
@@ -31,7 +30,6 @@ export class Enemy extends Base {
   @property
   detectRange: number = 500;
 
-  attackDamage: number = 1;
   @property
   attackCooldown: number = 2;
 
@@ -46,6 +44,9 @@ export class Enemy extends Base {
 
   @property
   isFly: boolean = false;
+
+  @property(Prefab)
+  public rewardCoin: Prefab = null;
 
   private attackTimer = 0;
 
@@ -65,15 +66,24 @@ export class Enemy extends Base {
     this.hitBoxEne = this.node.getChildByName("hitboxEne");
     this.player = find("Canvas/GirlCharacter");
 
-    console.log("thisAnim: ", this.anim);
-
     this.init(this.maxHealth, this.power, -1);
     this.persistScript = find("PersistNode").getComponent("PersistScript");
   }
 
   start() {
+    console.log("Strt: ", this.rewardCoin);
+
     // Register the observer for this enemy
-    const reward = new RewardManager();
+    const reward = new RewardManager("Enemies", () => {
+      if (this.rewardCoin) {
+        const reward = instantiate(this.rewardCoin);
+        reward.parent = this.node.parent;
+        reward.setPosition(this.node.position);
+
+        console.log("Node parent: ", this.node.parent);
+        console.log("Node position: ", this.node.position);
+      }
+    });
     this.subject.addObserver(reward);
 
     this.playerScript = this.persistScript.playerScript;
@@ -130,13 +140,13 @@ export class Enemy extends Base {
       this.changeState(BaseState.ATTACK, "atk");
       this.attackTimer = this.attackCooldown;
     } else {
-      // if (
-      //   !this.anim.getState(BaseState.IDLE).isPlaying &&
-      //   !this.anim.getState(BaseState.ATTACK).isPlaying
-      // ) {
-      //   this.changeState(BaseState.IDLE, "idle");
-      //   this.anim.play(BaseState.IDLE);
-      // }
+      if (
+        !this.anim.getState(BaseState.IDLE).isPlaying &&
+        !this.anim.getState("atk")?.isPlaying
+      ) {
+        this.changeState(BaseState.IDLE, "idle");
+        this.anim.play(BaseState.IDLE);
+      }
     }
     return BTStatus.SUCCESS;
   }
