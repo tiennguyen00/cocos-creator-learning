@@ -108,11 +108,7 @@ export class Character extends Base {
     if (!this.persistScript.playerScript) {
       this.persistScript.playerScript = this;
     }
-    console.log(
-      "playerScript: ",
-      this.persistScript.playerName,
-      this.persistScript
-    );
+
     this.playerName.string = this.persistScript.playerName;
     this.persistScript.proto = find("Canvas").getComponent("ProtoManager");
   }
@@ -150,11 +146,11 @@ export class Character extends Base {
         this.persistScript.playerScript.health /
         this.persistScript.playerScript.maxHealth;
       if (this.persistScript.playerScript.health <= 0) {
-        this.anim.play("dead1");
+        this.changeState(BaseState.DEAD, "dead1");
         return;
       }
       this.changeState(BaseState.HURT, "hurt1");
-      // this.body.applyLinearImpulseToCenter(new Vec2(80, 80), true);
+      this.body.applyLinearImpulseToCenter(new Vec2(80, 80), true);
       this.audioSource[6].play();
     } else if (
       otherCollider.node.name === "ground" ||
@@ -178,12 +174,12 @@ export class Character extends Base {
 
     if (this.dashTimer !== 0) {
       this.changeState(BaseState.DASH, "dash1");
-    } else if (this.jumpCount !== 0) {
-      this.changeState(BaseState.JUMP, "jump1");
     } else if (this.moveDir !== 0) {
       this.changeState(BaseState.RUN, "walk1");
     } else if (this.comboStep !== 0) {
       this.changeState(BaseState.ATTACK, "atk1");
+    } else if (this.jumpCount !== 0 && this.comboStep == 0) {
+      this.changeState(BaseState.JUMP, "jump1");
     } else {
       this.changeState(BaseState.IDLE, "idle1");
     }

@@ -59,7 +59,7 @@ export class ObjectHurt extends Component {
       );
 
       if (this.enemy.health == 0 && this.enemy.state === BaseState.DEAD) {
-        // this.enemy.hitBackTimer = 0.5;
+        this.enemy.hitBackTimer = 0.5;
         if (!this.enemy.anim.getState("die")?.isPlaying) {
           this.enemy.anim.play("die");
           setTimeout(() => {
@@ -69,7 +69,7 @@ export class ObjectHurt extends Component {
           }, 1000);
         }
       } else {
-        this.playerScript.attack(this.enemy);
+        // this.playerScript.attack(this.enemy);
         this.hpBar.progress = this.enemy.health / this.enemy.maxHealth;
         this.onHitEffect();
         this.enemy.changeState(BaseState.HURT);

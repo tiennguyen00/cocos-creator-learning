@@ -65,6 +65,8 @@ export class Enemy extends Base {
     this.hitBoxEne = this.node.getChildByName("hitboxEne");
     this.player = find("Canvas/GirlCharacter");
 
+    console.log("thisAnim: ", this.anim);
+
     this.init(this.maxHealth, this.power, -1);
     this.persistScript = find("PersistNode").getComponent("PersistScript");
   }
@@ -125,17 +127,16 @@ export class Enemy extends Base {
 
   attackPlayer(): BTStatus {
     if (this.attackTimer === 0) {
-      this.changeState(BaseState.ATTACK);
-      this.anim.play("atk");
+      this.changeState(BaseState.ATTACK, "atk");
       this.attackTimer = this.attackCooldown;
     } else {
-      if (
-        !this.anim.getState("idle").isPlaying &&
-        !this.anim.getState("atk").isPlaying
-      ) {
-        this.changeState(BaseState.IDLE);
-        this.anim.play("idle");
-      }
+      // if (
+      //   !this.anim.getState(BaseState.IDLE).isPlaying &&
+      //   !this.anim.getState(BaseState.ATTACK).isPlaying
+      // ) {
+      //   this.changeState(BaseState.IDLE, "idle");
+      //   this.anim.play(BaseState.IDLE);
+      // }
     }
     return BTStatus.SUCCESS;
   }
@@ -156,14 +157,12 @@ export class Enemy extends Base {
     this.node.setWorldPosition(this.node.worldPosition.add(moveStep));
 
     if (this.isFly) {
-      if (!this.anim.getState("idle")?.isPlaying) {
-        this.changeState(BaseState.IDLE);
-        this.anim.play("idle");
+      if (!this.anim.getState(BaseState.IDLE)?.isPlaying) {
+        this.changeState(BaseState.IDLE, "idle");
       }
     } else {
-      if (!this.anim.getState("run")?.isPlaying) {
-        this.changeState(BaseState.RUN);
-        this.anim.play("run");
+      if (!this.anim.getState(BaseState.RUN)?.isPlaying) {
+        this.changeState(BaseState.RUN, "run");
       }
     }
 
@@ -173,8 +172,12 @@ export class Enemy extends Base {
   patrolArea(): BTStatus {
     return BTStatus.RUNNING;
   }
+  changeAnim(anim: string) {
+    this.anim.stop();
+    this.anim.play(anim);
+  }
 
-  changeState(newState: BaseState) {
+  changeState(newState: BaseState, anim?: string) {
     if (this.state === newState || this.state === BaseState.DEAD) return;
 
     this.state = newState;
@@ -182,8 +185,8 @@ export class Enemy extends Base {
     if (newState === BaseState.HURT) {
       this.stunTimer = this.stunForce;
     }
-
     // console.log("changeState: ", newState);
+    this.changeAnim(anim);
   }
 
   update(dt: number) {
