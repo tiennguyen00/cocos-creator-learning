@@ -1,7 +1,6 @@
 import {
   _decorator,
   Component,
-  director,
   find,
   Label,
   Node,

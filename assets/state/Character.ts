@@ -47,6 +47,10 @@ export class Character extends Base {
   @property(Prefab)
   powerUpEffect: Prefab = null;
 
+  // UI
+  gameBoardNode = null;
+  // =============
+
   hitBox: BoxCollider2D = null;
 
   private persistScript = null;
@@ -130,8 +134,22 @@ export class Character extends Base {
       this.persistScript.playerScript.maxStamina;
   }
 
+  restart() {
+    this.gameBoardNode.active = false;
+  }
+
   public onPowerUpAnimEnd() {
     this.changeState(BaseState.IDLE, "idle1");
+  }
+
+  handleDeadth() {
+    this.changeState(BaseState.DEAD, "dead1");
+    // show the game over UI here
+    this.gameBoardNode = find("Canvas/UICamera/GameOver");
+    this.gameBoardNode.active = true;
+
+    //need play this dead animation because the preventStateChange will stop the dead animation
+    this.anim.play("dead1");
   }
 
   onDestroy() {
@@ -150,9 +168,7 @@ export class Character extends Base {
         this.persistScript.playerScript.health /
         this.persistScript.playerScript.maxHealth;
       if (this.persistScript.playerScript.health <= 0) {
-        this.changeState(BaseState.DEAD, "dead1");
-        //need play this dead animation because the preventStateChange will stop the dead animation
-        this.anim.play("dead1");
+        this.handleDeadth();
         return;
       }
       this.changeState(BaseState.HURT, "hurt1");
@@ -164,6 +180,8 @@ export class Character extends Base {
       otherCollider.node.name.includes("t_rock")
     ) {
       this.onLanded();
+    } else if (otherCollider.node.name === "water") {
+      this.handleDeadth();
     }
   }
 

@@ -182,7 +182,7 @@
     "_priority": 0,
     "_fov": 45,
     "_fovAxis": 0,
-    "_orthoHeight": 912.2539682539683,
+    "_orthoHeight": 472.63157894736844,
     "_near": 0,
     "_far": 2000,
     "_color": {
@@ -1376,7 +1376,7 @@
     },
     "_loop": true,
     "_playOnAwake": true,
-    "_volume": 0.5,
+    "_volume": 0.1,
     "_id": "12p1wkNr9D1a2C6J9OpoEY"
   },
   {

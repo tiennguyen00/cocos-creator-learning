@@ -12,6 +12,6 @@ export class PlayerFollower extends Component {
   start() {}
 
   update(deltaTime: number) {
-    this.node.x = Math.max(this.player.x, 0);
+    this.node.x = Math.max(Math.min(this.player.x, 5300), 0);
   }
 }
