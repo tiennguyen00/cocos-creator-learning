@@ -5,6 +5,8 @@ import {
   Label,
   Node,
   TextAsset,
+  UITransform,
+  Vec2,
   Widget,
 } from "cc";
 const { ccclass, property } = _decorator;
@@ -58,7 +60,8 @@ export class ProtoManager extends Component {
     console.log("Client receive message: ", result);
 
     const newNode = new Node();
-
+    const uiTransform = newNode.addComponent(UITransform);
+    uiTransform.anchorPoint = new Vec2(0, 0);
     // Set layer for following the camera (in here is 5)
     newNode.layer = 5;
 
@@ -71,10 +74,6 @@ export class ProtoManager extends Component {
     newLabel.lineHeight = 16;
     newLabel.enableOutline = true;
 
-    const newWidget = newNode.addComponent(Widget);
-    newWidget.node.position.set(-newWidget.left);
-    newWidget.left = 0;
-
     if (this.msgNode.children.length > 4) {
       this.msgNode.removeChild(this.msgNode.children[0]);
     }
@@ -86,7 +85,8 @@ export class ProtoManager extends Component {
     // Start the socket here
     this.ws = WebSocketClient.getInstance();
     this.ws.connect(
-      "wss://chores-production-5389.up.railway.app",
+      // "wss://chores-production-5389.up.railway.app",
+      "ws://localhost:5050",
       this.onReceiveMsg
     );
 

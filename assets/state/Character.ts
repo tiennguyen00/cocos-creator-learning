@@ -136,6 +136,16 @@ export class Character extends Base {
 
   restart() {
     this.gameBoardNode.active = false;
+
+    // Force character state!!
+    this.changeState(BaseState.IDLE, "idle1");
+    // Reset the char stats!!
+    this.persistScript.playerScript.health = this.maxHealth;
+    this.persistScript.playerScript.stamina = this.maxStamina;
+    this.hpBar.progress = 1;
+    this.mpBar.progress = 1;
+    // Reset the char's position!!
+    this.node.setPosition(0, 0);
   }
 
   public onPowerUpAnimEnd() {
