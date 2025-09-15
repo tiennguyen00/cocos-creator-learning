@@ -74,7 +74,7 @@ export class ProtoManager extends Component {
     newLabel.lineHeight = 16;
     newLabel.enableOutline = true;
 
-    if (this.msgNode.children.length > 4) {
+    if (this.msgNode.children.length >= 4) {
       this.msgNode.removeChild(this.msgNode.children[0]);
     }
 
@@ -86,7 +86,7 @@ export class ProtoManager extends Component {
     this.ws = WebSocketClient.getInstance();
     this.ws.connect(
       // "wss://chores-production-5389.up.railway.app",
-      "ws://localhost:5050",
+      "wss://web-socket-test-9mqt.onrender.com",
       this.onReceiveMsg
     );
 
